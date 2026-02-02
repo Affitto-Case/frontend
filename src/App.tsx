@@ -5,6 +5,7 @@ import { type User, type Booking, type Feedback, type Host, type Residence } fro
 import { toast } from 'sonner'
 import Layout from "./components/common/layout"
 import ResidenceByHostCode from "./utils/ResidencesByHostCode";
+import LastUserBooking from "./utils/LastUserBooking";
 
 
 export function App() {
@@ -87,8 +88,8 @@ return (
       }
     />
     <Route path="residencesByHostCode" element={<ResidenceByHostCode />} />
-    {/* <Route path="lastUserBooking" element={<LastUserBooking />} />
-    <Route path="mostPopularResidence" element={<MostPopularResidence />} />
+    <Route path="lastUserBooking" element={<LastUserBooking users={users} />} />
+    {/*<Route path="mostPopularResidence" element={<MostPopularResidence />} />
     <Route path="topHostsThisMonth" element={<TopHostsThisMonth />} />
     <Route path="superHosts" element={<SuperHosts />} />
     <Route path="topUsersThisMonth" element={<TopUsersThisMonth />} />
