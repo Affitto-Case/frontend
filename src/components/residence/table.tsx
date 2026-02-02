@@ -54,10 +54,7 @@ export function TableActions({ residences }: { residences: Residence[] }) {
 
   const handleEditSubmit = async () => {
     if (!formData) return
-
-    console.log(formData)
     const residenceReq = {
-      id: formData.id,
       name: formData.name,
       address: formData.address,
       numberOfRooms: formData.numberOfRooms,
@@ -66,9 +63,7 @@ export function TableActions({ residences }: { residences: Residence[] }) {
       price: formData.price,
       availableFrom: formData.availableFrom, 
       availableTo: formData.availableTo,     
-      host: {
-        id: formData.hostId  
-      }       
+      hostId: formData.hostId      
     }
     try {
       const res = await fetch(`${API_URL}/api/v1/residences/${formData.id}`, {
@@ -137,6 +132,7 @@ export function TableActions({ residences }: { residences: Residence[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
+        
           {residences.map((r) => (
             <TableRow key={r.id}>
               <TableCell className="font-medium">{r.name}</TableCell>
