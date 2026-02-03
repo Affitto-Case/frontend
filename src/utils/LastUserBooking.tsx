@@ -63,7 +63,7 @@ export function LastUserBooking({ users }: { users: User[] }) {
   const handleViewLastBooking = (user: User) => {
     setSelectedUser(user);
     setDialogOpen(true);
-    fetchLastBooking(user.userId);
+    fetchLastBooking(user.id);
   };
 
   return (
@@ -80,12 +80,12 @@ export function LastUserBooking({ users }: { users: User[] }) {
         </TableHeader>
         <TableBody>
           {users.map((user) => (
-            <TableRow key={user.userId}>
-              <TableCell className="font-medium">#{user.userId}</TableCell>
+            <TableRow key={user.id}>
+              <TableCell className="font-medium">#{user.id}</TableCell>
               <TableCell>
-                {user.userFirstName} {user.userLastName}
+                {user.firstName} {user.lastName}
               </TableCell>
-              <TableCell>{user.userEmail}</TableCell>
+              <TableCell>{user.email}</TableCell>
               <TableCell>{user.address}</TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
@@ -114,7 +114,7 @@ export function LastUserBooking({ users }: { users: User[] }) {
             <DialogTitle>Last Booking</DialogTitle>
             <DialogDescription>
               Most recent booking for
-              {selectedUser && ` ${selectedUser.userFirstName} ${selectedUser.userLastName}`}
+              {selectedUser && ` ${selectedUser.firstName} ${selectedUser.lastName}`}
             </DialogDescription>
           </DialogHeader>
 

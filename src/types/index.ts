@@ -1,3 +1,5 @@
+import { z } from "zod"
+
 export interface User{
     userId: number,
     userFirstName: string,
@@ -8,10 +10,12 @@ export interface User{
 }
 
 export interface Host{
-    userId: number,
-    userFirstName: string,
-    userLastName: string,
-    userEmail: string,
+    id: number,
+    firstName: string,
+    lastName: string,
+    email: string,
+    address: string,
+    registrationDate: string,
     hostCode: string,
     totalBookings: number,
     isSuperHost: boolean
@@ -74,5 +78,14 @@ export type ColorType = 'blue' | 'green' | 'yellow' | 'purple' | 'pink' | 'red';
 
 
 
+export const userSchema = z.object({
+  firstName: z.string().min(2, "Il nome deve avere almeno 2 caratteri"),
+  lastName: z.string().min(2, "Il cognome deve avere almeno 2 caratteri"),
+  email: z.string().email("Inserisci un'email valida"),
+  password: z.string().min(6, "La password deve avere almeno 6 caratteri"),
+  address: z.string().min(5, "L'indirizzo è troppo breve"),
+})
+
+export type UserFormValues = z.infer<typeof userSchema>
 
 

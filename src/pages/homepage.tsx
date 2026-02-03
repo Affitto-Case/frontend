@@ -11,7 +11,7 @@ export function Homepage(
 ) {
 return (
     <>
-    <h1 className="text-xl font-bold  mb-4 flex items-center">Welcome, Operator </h1>
+    <h1 className="text-xl font-bold mb-4">Welcome, Operator </h1>
     <div className="container mx-auto px-6 py-8">
         <div className=" rounded-lg shadow-md p-6 mb-8">
         <HeroCard 
