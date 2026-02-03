@@ -7,7 +7,7 @@ import { z } from "zod"
 import { toast } from "sonner"
 import type { User } from "@/types"
 
-// Definizione dello schema Zod per l'utente
+
 const userFormSchema = z.object({
     firstName: z.string().min(1, "Il nome è obbligatorio"),
     lastName: z.string().min(1, "Il cognome è obbligatorio"),
@@ -18,8 +18,8 @@ const userFormSchema = z.object({
 
 type UserFormValues = z.infer<typeof userFormSchema>
 
-// Tipo per la risposta del backend (senza password)
-type UserResponse = Omit<User, 'userPassword'>
+
+type UserResponse = User
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -70,7 +70,7 @@ const CreateUserForm = ({ onFormSubmit }: { onFormSubmit?: (data: UserResponse) 
             console.log("Response data:", responseData)
             
             toast.success("Utente creato con successo")
-            reset() // Resetta il form dopo la creazione
+            reset()
             
             if (onFormSubmit) {
                 console.log("Calling onFormSubmit")
@@ -95,7 +95,7 @@ const CreateUserForm = ({ onFormSubmit }: { onFormSubmit?: (data: UserResponse) 
             <h1 className="text-2xl font-bold">CREATE USER</h1>
 
             <div className="grid grid-cols-2 gap-4">
-                {/* First Name */}
+                
                 <div className="space-y-2">
                     <Label htmlFor="firstName">First Name</Label>
                     <Input 
@@ -107,7 +107,6 @@ const CreateUserForm = ({ onFormSubmit }: { onFormSubmit?: (data: UserResponse) 
                     {errors.firstName && <p className="text-destructive text-xs">{errors.firstName.message}</p>}
                 </div>
 
-                {/* Last Name */}
                 <div className="space-y-2">
                     <Label htmlFor="lastName">Last Name</Label>
                     <Input 
@@ -120,7 +119,6 @@ const CreateUserForm = ({ onFormSubmit }: { onFormSubmit?: (data: UserResponse) 
                 </div>
             </div>
 
-            {/* Email */}
             <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input 
@@ -133,7 +131,6 @@ const CreateUserForm = ({ onFormSubmit }: { onFormSubmit?: (data: UserResponse) 
                 {errors.email && <p className="text-destructive text-xs">{errors.email.message}</p>}
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input 
@@ -146,7 +143,6 @@ const CreateUserForm = ({ onFormSubmit }: { onFormSubmit?: (data: UserResponse) 
                 {errors.password && <p className="text-destructive text-xs">{errors.password.message}</p>}
             </div>
 
-            {/* Address */}
             <div className="space-y-2">
                 <Label htmlFor="address">Address</Label>
                 <Input 

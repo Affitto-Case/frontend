@@ -21,6 +21,7 @@ export interface Host{
     isSuperHost: boolean
 }
 
+
 export interface Residence{
     id: number,
     name: string,

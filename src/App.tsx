@@ -8,6 +8,9 @@ import ResidenceByHostCode from "./utils/ResidencesByHostCode";
 import LastUserBooking from "./utils/LastUserBooking";
 import UserManage from "./pages/user";
 import HostManage from "./pages/host";
+import ResidenceManage from "./pages/residences";
+import BookingManage from "./pages/booking";
+import FeedbackManage from "./pages/feedback";
 
 
 export function App() {
@@ -102,7 +105,9 @@ export function App() {
       <Route path="/crud/" element={<Layout />}>
         <Route path="user" element={<UserManage users={users} />} />
         <Route path="host" element={<HostManage />} />
-        
+        <Route path="residence" element={<ResidenceManage residences={residences}/>} />
+        <Route path="booking" element={<BookingManage bookings={bookings}/>} />
+        <Route path="feedback" element={<FeedbackManage/>} />
       </Route>
     </Routes>
 

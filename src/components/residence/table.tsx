@@ -29,8 +29,18 @@ import { MoreHorizontalIcon } from "lucide-react"
 import { toast } from "sonner"
 import type { Residence } from "@/types"
 
+// Definiamo l'interfaccia delle Props con callback opzionali
+interface TableResidenceProps {
+  residences: Residence[];
+  onResidenceUpdated?: (updated: Residence) => void; // Opzionale
+  onResidenceDeleted?: (id: number) => void;        // Opzionale
+}
 
-export function TableActions({ residences }: { residences: Residence[] }) {
+export function TableResidence({ 
+  residences, 
+  onResidenceUpdated, 
+  onResidenceDeleted 
+}: TableResidenceProps) {
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedResidence, setSelectedResidence] = useState<Residence | null>(null)
@@ -38,22 +48,21 @@ export function TableActions({ residences }: { residences: Residence[] }) {
 
   const API_URL = import.meta.env.VITE_API_URL
 
-
   const handleEdit = (residence: Residence) => {
     setSelectedResidence(residence)
     setFormData({ ...residence })
     setEditDialogOpen(true)
   }
 
-
   const handleDeleteClick = (residence: Residence) => {
     setSelectedResidence(residence)
     setDeleteDialogOpen(true)
   }
 
-
   const handleEditSubmit = async () => {
     if (!formData) return
+    
+    // Costruiamo l'oggetto richiesta (escludendo l'ID dal body se necessario)
     const residenceReq = {
       name: formData.name,
       address: formData.address,
@@ -65,6 +74,7 @@ export function TableActions({ residences }: { residences: Residence[] }) {
       availableTo: formData.availableTo,     
       hostId: formData.hostId      
     }
+
     try {
       const res = await fetch(`${API_URL}/api/v1/residences/${formData.id}`, {
         method: "PUT",
@@ -74,34 +84,41 @@ export function TableActions({ residences }: { residences: Residence[] }) {
         body: JSON.stringify(residenceReq),
       })
 
-      if (!res.ok) {
-        throw new Error("Failed to update residence")
-      }
+      if (!res.ok) throw new Error("Failed to update residence")
 
       toast.success("Residence updated successfully")
+      
+      // Chiamiamo la callback se esiste per aggiornare lo stato del padre
+      if (onResidenceUpdated) {
+        onResidenceUpdated(formData)
+      }
+      
       setEditDialogOpen(false)
     } catch (error) {
       if (error instanceof Error) {
-        toast.error("Error: "+error.message)
+        toast.error("Error: " + error.message)
       }
     }
   }
 
   const handleDeleteSubmit = async () => {
-    if (!selectedResidence) return
+    if (!selectedResidence || !selectedResidence.id) return
 
     try {
       const res = await fetch(`${API_URL}/api/v1/residences/${selectedResidence.id}`, {
         method: "DELETE",
       })
 
-      if (!res.ok) {
-        throw new Error("Failed to delete residence")
-      }
+      if (!res.ok) throw new Error("Failed to delete residence")
 
       toast.success("Residence deleted successfully")
+      
+      // Chiamiamo la callback se esiste per rimuovere l'elemento dallo stato del padre
+      if (onResidenceDeleted) {
+        onResidenceDeleted(selectedResidence.id)
+      }
+      
       setDeleteDialogOpen(false)
-      // Optionally: refresh data or update state
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message)
@@ -109,7 +126,6 @@ export function TableActions({ residences }: { residences: Residence[] }) {
     }
   }
 
-  // Update form data
   const handleInputChange = (field: keyof Residence, value: string | number) => {
     if (!formData) return
     setFormData({
@@ -132,7 +148,6 @@ export function TableActions({ residences }: { residences: Residence[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-        
           {residences.map((r) => (
             <TableRow key={r.id}>
               <TableCell className="font-medium">{r.name}</TableCell>
@@ -320,4 +335,4 @@ export function TableActions({ residences }: { residences: Residence[] }) {
   )
 }
 
-export default TableActions
+export default TableResidence

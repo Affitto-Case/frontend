@@ -1,5 +1,5 @@
 import InputField from "@/components/common/inputField"
-import TableActions from "@/components/residence/table"
+import TableResidence from "@/components/residence/table"
 import type { Residence } from "@/types"
 import { useEffect, useState } from "react"
 
@@ -55,7 +55,7 @@ export function ResidenceByHostCode(){
             </div>
 
             <div> 
-                <TableActions residences={residences} />
+                <TableResidence residences={residences} />
             </div>
         </div>
         </>
