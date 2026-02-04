@@ -74,7 +74,6 @@ export function LastUserBooking({ users }: { users: User[] }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Address</TableHead>
@@ -84,7 +83,6 @@ export function LastUserBooking({ users }: { users: User[] }) {
         <TableBody>
           {users.map((user) => (
             <TableRow key={user.userId}>
-              <TableCell className="font-medium">#{user.userId}</TableCell>
               <TableCell>
                 {user.userFirstName} {user.userLastName}
               </TableCell>

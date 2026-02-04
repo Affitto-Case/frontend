@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { Residence } from "@/types";
-import { TrendingUp, Home, Star, Inbox } from "lucide-react";
+import { TrendingUp, Home, Inbox } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -49,7 +49,7 @@ return (
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="p-0"> {/* P-0 per far arrivare il separatore ai bordi */}
+        <CardContent className="p-0">
           {residences && residences.length > 0 ? (
             residences.map((r, index) => (
               <div key={r.id || index}>
