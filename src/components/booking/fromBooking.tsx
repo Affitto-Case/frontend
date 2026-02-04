@@ -6,13 +6,13 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from "zod"
 import { toast } from "sonner"
-import { 
-  CalendarDays, 
-  Info, 
-  Home,  
-  AlertCircle, 
-  Loader2, 
-  ExternalLink 
+import {
+  CalendarDays,
+  Info,
+  Home,
+  AlertCircle,
+  Loader2,
+  ExternalLink
 } from "lucide-react"
 import {
   Dialog,
@@ -40,7 +40,7 @@ const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) =>
   const [residences, setResidences] = useState<Residence[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isFetchingBookings, setIsFetchingBookings] = useState(false)
-  
+
   const [selectedRes, setSelectedRes] = useState<Residence | null>(null)
   const [currentBookings, setCurrentBookings] = useState<Booking[]>([])
   const [viewingBooking, setViewingBooking] = useState<Booking | null>(null)
@@ -72,7 +72,7 @@ const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) =>
     const id = e.target.value
     setSelectedRes(null)
     setCurrentBookings([])
-    
+
     if (!id) return
 
     const resBase = residences.find(r => r.id === Number(id))
@@ -119,9 +119,9 @@ const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) =>
   return (
     <div className="w-full max-w-5xl mx-auto p-4">
       <div className="flex flex-col md:flex-row gap-6 items-start">
-        
+
         {/* FORM PANEL */}
-        <form className="w-full md:w-95 space-y-6 p-6 bg-white rounded-lg border border-border shadow-sm" onSubmit={handleSubmit(onSubmit)}>
+        <form className="w-full md:w-96 space-y-6 p-6 bg-white rounded-lg border border-border shadow-sm" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <h2 className="text-lg font-semibold tracking-tight">Create Booking</h2>
             <p className="text-sm text-muted-foreground">Enter details for the new reservation.</p>
@@ -139,8 +139,8 @@ const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) =>
 
             <div className="space-y-2">
               <Label htmlFor="residenceId">Residence</Label>
-              <select 
-                {...register("residenceId")} 
+              <select
+                {...register("residenceId")}
                 id="residenceId"
                 onChange={(e) => {
                   register("residenceId").onChange(e)
@@ -185,7 +185,7 @@ const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) =>
                 <Home className="h-5 w-5 text-primary" />
                 <h3 className="text-lg font-semibold">{selectedRes.name}</h3>
               </div>
-              
+
               <div className="space-y-6">
                 <div className="rounded-md bg-muted p-4">
                   <div className="flex items-center gap-2 text-sm font-medium mb-1">
@@ -200,12 +200,12 @@ const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) =>
                 <div className="space-y-3">
                   <h4 className="text-sm font-medium leading-none">Existing Bookings</h4>
                   <Separator />
-                  
+
                   {currentBookings.length > 0 ? (
                     <div className="grid gap-2 max-h-62.5 overflow-y-auto pr-2">
                       {currentBookings.map((b) => (
-                        <div 
-                          key={b.id} 
+                        <div
+                          key={b.id}
                           onClick={() => setViewingBooking(b)}
                           className="flex items-center justify-between p-3 rounded-md border border-border bg-background hover:bg-accent transition-colors cursor-pointer group"
                         >
@@ -282,7 +282,7 @@ const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) =>
               </div>
             </div>
           )}
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setViewingBooking(null)}>Close</Button>
           </DialogFooter>

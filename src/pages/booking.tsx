@@ -11,27 +11,27 @@ export function BookingManage() {
 
   const API_URL = import.meta.env.VITE_API_URL
 
-  useEffect(()=>{
-      setIsLoading(true);
-      const fetchBookings = async () => {
-        try{
-          const res = await fetch(`${API_URL}/api/v1/bookings`)
-          if(!res.ok){
-            throw new Error("Failed to fetch users")
-          }
-          const bookingsResp = await res.json();
-          setBookings(bookingsResp)
-          toast.success("Data loaded successfully");
-        } catch (error){
-          if (error instanceof Error) {
-            toast.error(error.message);
-          }
-        } finally {
-          setIsLoading(false);
+  useEffect(() => {
+    setIsLoading(true);
+    const fetchBookings = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/v1/bookings`)
+        if (!res.ok) {
+          throw new Error("Failed to fetch users")
         }
-      };
-      fetchBookings();
-    },[])
+        const bookingsResp = await res.json();
+        setBookings(bookingsResp)
+        toast.success("Data loaded successfully");
+      } catch (error) {
+        if (error instanceof Error) {
+          toast.error(error.message);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBookings();
+  }, [])
 
   const handleFormSubmit = (data: Booking) => {
     console.log("Booking created:", data)
@@ -62,23 +62,23 @@ export function BookingManage() {
 
   return (
     <div className="container mx-auto px-6 py-8">
-      <div className="flex flex-col justify-center items-center gap-4">
-        <div className="rounded-lg shadow-md p-6 mb-8">
+      <div className="flex flex-col gap-6 w-full">
+        <div className="w-full rounded-lg shadow-md p-6 mb-8 border bg-card">
           <CreateBookingForm onFormSubmit={handleFormSubmit} />
         </div>
-        <div className="lg:col-span-8 bg-white rounded-lg border shadow-sm">
+        <div className="w-full bg-white rounded-lg border shadow-sm">
           {isLoading ? (
             <div className="flex h-64 items-center justify-center">
               <Loader2 className="size-8 animate-spin text-muted-foreground" />
             </div>
           ) : (
-        <TableBooking
-          bookings={bookings}
-          onBookingUpdated={handleBookingUpdated}
-          onBookingDeleted={handleBookingDeleted}
-        />
-         )}
-      </div>
+            <TableBooking
+              bookings={bookings}
+              onBookingUpdated={handleBookingUpdated}
+              onBookingDeleted={handleBookingDeleted}
+            />
+          )}
+        </div>
       </div>
     </div>
   )

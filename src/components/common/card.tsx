@@ -16,14 +16,19 @@ const colorClasses: Record<ColorType, string> = {
   red: "text-red-600"
 }
 
-export function CardStats({title, stats,color} : {title: string, stats: number | null,color: ColorType}) {
+export function CardStats({ title, stats, color, icon: Icon }: { title: string; stats: number | null; color: ColorType; icon?: any }) {
   return (
-    <Card className="w-full">
-      <CardHeader className="flex justify-center items-center">
-        <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+    <Card className="w-full hover:shadow-lg transition-shadow duration-300 h-32 flex flex-col justify-between">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+        {Icon && <Icon className={`h-4 w-4 ${colorClasses[color]}`} />}
       </CardHeader>
-      <CardContent className="flex justify-center items-center">
-        <h2 className={`text-3xl font-bold ${colorClasses[color]}`}>{stats}</h2>
+      <CardContent>
+        {stats !== null ? (
+          <div className="text-2xl font-bold">{stats}</div>
+        ) : (
+          <div className="text-sm text-muted-foreground">Overview</div>
+        )}
       </CardContent>
     </Card>
   )
