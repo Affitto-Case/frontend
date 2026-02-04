@@ -1,13 +1,19 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { User, Mail, Loader2, Crown, CalendarCheck } from "lucide-react";
+import { User, Mail, Loader2, Crown, CalendarCheck, MapPin } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import type { TopUserStats } from "@/types";
+import { colorClasses, type ColorType, type TopUserStats } from "@/types";
+import { cn } from "@/lib/utils";
 
 
-export function TopUsersMonthly() {
+export function TopUsersMonthly({ color: defaultColor }: { color?: ColorType }) {
+  const location = useLocation()
+  const themeColor = (location.state as { themeColor?: ColorType })?.themeColor || defaultColor || "blue"
+  const theme = colorClasses[themeColor]
+
   const [users, setUsers] = useState<TopUserStats[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const API_URL = import.meta.env.VITE_API_URL;
@@ -27,74 +33,89 @@ export function TopUsersMonthly() {
     };
 
     fetchTopUsers();
-  }, []);
+  }, [API_URL]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Crown className="h-5 w-5 text-primary" />
-        <h2 className="text-xl font-semibold tracking-tight">Guest Loyalty</h2>
+    <div className="container mx-auto px-6 py-8 space-y-8">
+      <div className="flex items-center gap-2 border-b pb-4">
+        <Crown className={cn("size-6", theme.icon)} />
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Guest Loyalty</h1>
+          <p className="text-sm text-muted-foreground">Recognizing our most frequent travelers</p>
+        </div>
       </div>
 
-      <Card className="border-2 border-primary/10 shadow-md">
-        <CardHeader className="bg-primary/5 pb-6">
-          <CardTitle className="text-2xl">Top 5 Guests</CardTitle>
-          <CardDescription>
-            Users with the highest number of stay days last month
-          </CardDescription>
+      <Card className={cn("border-2 shadow-xl overflow-hidden", theme.border)}>
+        <CardHeader className={cn("pb-8", theme.bg)}>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="text-2xl font-black tracking-tight">Top Guests of the Month</CardTitle>
+              <CardDescription className="text-muted-foreground/80 font-medium">
+                Calculated based on the highest cumulative stay duration
+              </CardDescription>
+            </div>
+            <div className="bg-white/50 backdrop-blur-sm p-3 rounded-2xl border border-white shadow-sm">
+              <Crown className={cn("h-6 w-6", theme.icon)} />
+            </div>
+          </div>
         </CardHeader>
-        
+
         <CardContent className="p-0">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
-              <p className="text-sm text-muted-foreground">Calculating stay durations...</p>
+            <div className="flex flex-col items-center justify-center py-24 bg-muted/5">
+              <Loader2 className={cn("h-10 w-10 animate-spin mb-4", theme.icon)} />
+              <p className="text-sm font-bold text-muted-foreground animate-pulse tracking-widest uppercase">Calculating stay durations...</p>
             </div>
           ) : users.length > 0 ? (
             users.map((user, index) => (
-              <div key={user.userId}>
-                <div className="flex flex-col md:flex-row justify-between items-center gap-6 p-6 transition-colors hover:bg-muted/50">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-8 w-8 items-center justify-center font-black text-muted-foreground/30 text-2xl">
+              <div key={user.userId} className="group">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-8 p-8 transition-all hover:bg-muted/30">
+                  <div className="flex items-center gap-6">
+                    <div className="flex h-10 w-10 items-center justify-center font-black text-muted-foreground/20 text-4xl italic">
                       {index + 1}
                     </div>
 
-                    <Avatar className="h-12 w-12 border shadow-sm">
-                      <AvatarFallback className="bg-primary/10 text-primary font-bold uppercase">
+                    <Avatar className={cn("h-16 w-16 border-2 shadow-md transition-transform group-hover:scale-105", theme.border)}>
+                      <AvatarFallback className={cn("bg-white font-black text-xl uppercase", theme.icon)}>
                         {user.firstName[0]}{user.lastName[0]}
                       </AvatarFallback>
                     </Avatar>
 
-                    <div className="space-y-1">
-                      <h3 className="text-lg font-bold leading-none">
+                    <div className="space-y-1.5">
+                      <h3 className="text-xl font-bold tracking-tight group-hover:text-primary transition-colors">
                         {user.firstName} {user.lastName}
                       </h3>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                         <Mail className="h-3.5 w-3.5" />
                         <span>{user.email}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 bg-primary/5 px-5 py-2 rounded-xl border border-primary/10">
-                    <CalendarCheck className="h-5 w-5 text-primary" />
+                  <div className={cn("flex items-center gap-6 px-8 py-4 rounded-2xl border bg-white shadow-sm min-w-[200px]", theme.border)}>
+                    <div className={cn("p-3 rounded-xl", theme.bg)}>
+                      <CalendarCheck className={cn("h-6 w-6", theme.icon)} />
+                    </div>
                     <div className="text-right">
-                      <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
-                        Total Days
+                      <p className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-[0.2em] mb-1 text-right">
+                        Total Stay
                       </p>
-                      <p className="text-xl font-black text-primary leading-none">
-                        {user.totalDays}
-                      </p>
+                      <div className="flex items-baseline gap-1 justify-end">
+                        <p className={cn("text-3xl font-black leading-none", theme.icon)}>
+                          {user.totalDays}
+                        </p>
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">Days</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-                {index < users.length - 1 && <Separator />}
+                {index < users.length - 1 && <Separator className="opacity-50" />}
               </div>
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-              <User className="h-10 w-10 mb-2 opacity-20" />
-              <p className="text-sm font-medium">No activity data found.</p>
+            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-muted/10">
+              <User className="h-12 w-12 mb-3 opacity-10" />
+              <p className="text-sm font-bold">No activity recorded for this ranking period.</p>
             </div>
           )}
         </CardContent>

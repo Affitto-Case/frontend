@@ -6,7 +6,9 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from "zod"
 import { toast } from "sonner"
-import type { Host, Residence } from "@/types" 
+import type { Host, Residence, ColorType } from "@/types"
+import { colorClasses } from "@/types"
+import { cn } from "@/lib/utils"
 
 const residenceFormSchema = z.object({
     name: z.string().min(1, "Il nome è obbligatorio"),
@@ -24,7 +26,7 @@ type ResidenceFormValues = z.infer<typeof residenceFormSchema>
 
 const API_URL = import.meta.env.VITE_API_URL
 
-const CreateResidenceForm = ({ onFormSubmit }: { onFormSubmit?: (data: Residence) => void }) => {
+const CreateResidenceForm = ({ onFormSubmit, color }: { onFormSubmit?: (data: Residence) => void, color: ColorType }) => {
     const [hosts, setHosts] = useState<Host[]>([])
     const [isLoadingHosts, setIsLoadingHosts] = useState(true)
 
@@ -61,9 +63,9 @@ const CreateResidenceForm = ({ onFormSubmit }: { onFormSubmit?: (data: Residence
 
     const onSubmit = async (formData: ResidenceFormValues) => {
         try {
-    
+
             const url = `${API_URL}/api/v1/residence`
-            
+
             const res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -75,7 +77,7 @@ const CreateResidenceForm = ({ onFormSubmit }: { onFormSubmit?: (data: Residence
             const responseData: Residence = await res.json()
             toast.success("Residenza creata con successo")
             reset()
-            
+
             if (onFormSubmit) onFormSubmit(responseData)
         } catch (error) {
             toast.error("Errore nella richiesta")
@@ -88,7 +90,7 @@ const CreateResidenceForm = ({ onFormSubmit }: { onFormSubmit?: (data: Residence
 
             <div className="space-y-2">
                 <Label htmlFor="hostId">Select Host</Label>
-                <select 
+                <select
                     {...register("hostId")}
                     id="hostId"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
@@ -148,7 +150,7 @@ const CreateResidenceForm = ({ onFormSubmit }: { onFormSubmit?: (data: Residence
                 </div>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isSubmitting || isLoadingHosts}>
+            <Button type="submit" className={cn("w-full", colorClasses[color].button)} disabled={isSubmitting || isLoadingHosts}>
                 {isSubmitting ? "Saving..." : "Create Residence"}
             </Button>
         </form>

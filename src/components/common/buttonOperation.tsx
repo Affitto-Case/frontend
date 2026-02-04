@@ -1,4 +1,4 @@
-import type { ColorType } from "@/types"
+import { colorClasses, type ColorType } from "@/types"
 import { Button } from "../ui/button"
 import { cn } from "@/lib/utils"
 import { useNavigate } from "react-router-dom"
@@ -15,30 +15,45 @@ export function ButtonOperation({
   icon?: any
 }) {
   const navigate = useNavigate()
-
-  const colorClasses: Record<ColorType, string> = {
-    blue: "hover:border-blue-500/50 hover:bg-blue-500/10 text-blue-600",
-    green: "hover:border-green-500/50 hover:bg-green-500/10 text-green-600",
-    yellow: "hover:border-yellow-500/50 hover:bg-yellow-500/10 text-yellow-600",
-    purple: "hover:border-purple-500/50 hover:bg-purple-500/10 text-purple-600",
-    pink: "hover:border-pink-500/50 hover:bg-pink-500/10 text-pink-600",
-    red: "hover:border-red-500/50 hover:bg-red-500/10 text-red-600",
-  }
+  const theme = colorClasses[color]
 
   return (
     <Button
-      variant="outline"
-      onClick={() => navigate(path)}
+      variant="ghost"
+      onClick={() => navigate(path, { state: { themeColor: color } })}
       className={cn(
-        "w-full flex items-center justify-between p-6 h-24 rounded-lg border-2 bg-card text-left transition-all hover:shadow-md",
-        colorClasses[color]
+        "w-full group relative flex items-center justify-between p-6 h-24 rounded-xl border bg-card/50 backdrop-blur-sm text-left transition-all duration-300",
+        "hover:shadow-lg hover:-translate-y-1 hover:bg-card",
+        theme.border
       )}
     >
-      <div className="flex items-center gap-3 overflow-hidden">
-        {Icon && <Icon className="h-5 w-5 flex-shrink-0" />}
-        <span className="font-medium text-foreground whitespace-normal text-left">{title}</span>
+      {/* Decorative colored bar on the left */}
+      <div className={cn(
+        "absolute left-0 top-0 bottom-0 w-1.5 rounded-l-xl transition-all duration-300 group-hover:w-2",
+        theme.button.split(" ")[0] // Extract bg color from button theme
+      )} />
+
+      <div className="flex items-center gap-4 overflow-hidden">
+        <div className={cn(
+          "p-2 rounded-lg transition-colors duration-300",
+          theme.bg,
+          theme.icon
+        )}>
+          {Icon && <Icon className="h-6 w-6" />}
+        </div>
+        <span className="font-semibold text-foreground whitespace-normal leading-tight">{title}</span>
       </div>
-      <span className="text-xl opacity-50 flex-shrink-0 ml-2">→</span>
+
+      <div className={cn(
+        "flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300",
+        "group-hover:scale-110",
+        theme.border,
+        theme.icon
+      )}>
+        <span className="text-xl">→</span>
+      </div>
     </Button>
   )
 }
+
+export default ButtonOperation;

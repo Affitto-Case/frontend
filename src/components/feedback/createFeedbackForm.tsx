@@ -8,7 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import type { Booking, User, Feedback } from "@/types";
+import type { Booking, User, Feedback, ColorType } from "@/types";
+import { colorClasses } from "@/types";
+import { cn } from "@/lib/utils";
 
 const feedbackSchema = z.object({
   title: z.string().min(1, "Title is required").max(100),
@@ -20,11 +22,11 @@ const feedbackSchema = z.object({
 
 type FeedbackFormValues = z.infer<typeof feedbackSchema>;
 
-export function CreateFeedbackForm({ onCreated }: { onCreated: (f: Feedback) => void }) {
+export function CreateFeedbackForm({ onCreated, color }: { onCreated: (f: Feedback) => void, color: ColorType }) {
   const [users, setUsers] = useState<User[]>([]);
   const [userBookings, setUserBookings] = useState<Booking[]>([]);
   const [isFetchingBookings, setIsFetchingBookings] = useState(false);
-  
+
   const API_URL = import.meta.env.VITE_API_URL;
 
   const { register, handleSubmit, reset, watch, setValue, formState: { isSubmitting } } = useForm<FeedbackFormValues>({
@@ -101,8 +103,8 @@ export function CreateFeedbackForm({ onCreated }: { onCreated: (f: Feedback) => 
 
       <div className="space-y-2">
         <Label>Booking</Label>
-        <select 
-          {...register("bookingId")} 
+        <select
+          {...register("bookingId")}
           disabled={!selectedUserId || isFetchingBookings || userBookings.length === 0}
           className="flex h-9 w-full rounded-md border border-input px-3 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -132,7 +134,7 @@ export function CreateFeedbackForm({ onCreated }: { onCreated: (f: Feedback) => 
         <Textarea {...register("comment")} />
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting || !selectedUserId || userBookings.length === 0}>
+      <Button type="submit" className={cn("w-full", colorClasses[color].button)} disabled={isSubmitting || !selectedUserId || userBookings.length === 0}>
         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit Feedback"}
       </Button>
     </form>

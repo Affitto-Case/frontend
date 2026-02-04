@@ -23,7 +23,9 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
-import type { Booking, User, Residence } from "@/types"
+import type { Booking, User, Residence, ColorType } from "@/types"
+import { colorClasses } from "@/types"
+import { cn } from "@/lib/utils"
 
 const bookingFormSchema = z.object({
   startDate: z.string().min(1, "Start date is required"),
@@ -35,10 +37,9 @@ const bookingFormSchema = z.object({
 type BookingFormValues = z.infer<typeof bookingFormSchema>
 const API_URL = import.meta.env.VITE_API_URL
 
-const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) => void }) => {
+const CreateBookingForm = ({ onFormSubmit, color }: { onFormSubmit?: (data: Booking) => void, color: ColorType }) => {
   const [users, setUsers] = useState<User[]>([])
   const [residences, setResidences] = useState<Residence[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [isFetchingBookings, setIsFetchingBookings] = useState(false)
 
   const [selectedRes, setSelectedRes] = useState<Residence | null>(null)
@@ -56,8 +57,6 @@ const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) =>
         setResidences(await rRes.json())
       } catch {
         toast.error("Error loading initial data")
-      } finally {
-        setIsLoading(false)
       }
     }
     fetchData()
@@ -166,7 +165,7 @@ const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) =>
             </div>
           </div>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" className={cn("w-full", colorClasses[color].button)} disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Confirm Reservation
           </Button>

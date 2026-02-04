@@ -1,4 +1,4 @@
-import type { ColorType } from "@/types"
+import { colorClasses, type ColorType } from "@/types"
 import { Button } from "../ui/button"
 import { cn } from "@/lib/utils"
 import { useNavigate } from "react-router-dom"
@@ -17,22 +17,13 @@ export function ButtonManagment({
 
   const navigate = useNavigate()
 
-  const colorClasses: Record<ColorType, string> = {
-    blue: "bg-blue-500 hover:bg-blue-600 text-white border-blue-600",
-    green: "bg-green-500 hover:bg-green-600 text-white border-green-600",
-    yellow: "bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-600",
-    purple: "bg-purple-500 hover:bg-purple-600 text-white border-purple-600",
-    pink: "bg-pink-500 hover:bg-pink-600 text-white border-pink-600",
-    red: "bg-red-500 hover:bg-red-600 text-white border-red-600",
-  }
-
   return (
     <Button
       variant="default"
-      onClick={() => navigate(path)}
+      onClick={() => navigate(path, { state: { themeColor: color } })}
       className={cn(
         "w-full flex items-center justify-between p-6 h-24 rounded-lg shadow-md transition-all hover:shadow-lg hover:-translate-y-1",
-        colorClasses[color]
+        colorClasses[color].button
       )}
     >
       <div className="flex items-center gap-3">

@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react"
-import type { User } from "@/types/index"
+import { useLocation } from "react-router-dom"
+import type { User, ColorType } from "@/types/index"
+import { colorClasses } from "@/types/index"
+import { cn } from "@/lib/utils"
 import TableUser from "@/components/user/table"
 import CreateUserForm from "@/components/user/formUser"
 import { toast } from "sonner"
 import { Loader2, Users } from "lucide-react"
 
-export function UserManage() {
+export function UserManage({ color: defaultColor }: { color?: ColorType }) {
+  const location = useLocation()
+  const themeColor = (location.state as { themeColor?: ColorType })?.themeColor || defaultColor || "blue"
+  const theme = colorClasses[themeColor]
+
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const API_URL = import.meta.env.VITE_API_URL
@@ -41,16 +48,16 @@ export function UserManage() {
   return (
     <div className="container mx-auto py-8 space-y-8">
       <div className="flex items-center gap-2 border-b pb-4">
-        <Users className="size-6 text-primary" />
+        <Users className={cn("size-6", theme.icon)} />
         <h1 className="text-2xl font-bold tracking-tight">User Management</h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-4">
-          <CreateUserForm onFormSubmit={handleFormSubmit} />
+        <div className={cn("lg:col-span-4 rounded-xl border-2 p-1", theme.border)}>
+          <CreateUserForm onFormSubmit={handleFormSubmit} color={themeColor} />
         </div>
 
-        <div className="lg:col-span-8 bg-white rounded-lg border shadow-sm">
+        <div className={cn("lg:col-span-8 bg-white rounded-lg border shadow-sm", theme.border)}>
           {isLoading ? (
             <div className="flex h-64 items-center justify-center">
               <Loader2 className="size-8 animate-spin text-muted-foreground" />
@@ -68,4 +75,4 @@ export function UserManage() {
   )
 }
 
-export default UserManage
+export default UserManage;

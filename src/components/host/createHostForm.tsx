@@ -18,7 +18,9 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import type { Host, PromoteUserDialogProps, User, } from "@/types"
+import type { Host, PromoteUserDialogProps, User } from "@/types"
+import { colorClasses } from "@/types"
+import { cn } from "@/lib/utils"
 
 
 
@@ -26,7 +28,8 @@ export function PromoteUserDialog({
   open,
   onOpenChange,
   onUserPromoted,
-  existingHosts
+  existingHosts,
+  color
 }: PromoteUserDialogProps) {
   const [users, setUsers] = useState<User[]>([])
   const [selectedUserId, setSelectedUserId] = useState<string>("")
@@ -121,6 +124,7 @@ export function PromoteUserDialog({
           <Button
             onClick={handlePromote}
             disabled={!selectedUserId || loading}
+            className={cn(colorClasses[color].button)}
           >
             {loading ? "Promozione in corso..." : "Promuovi come Host"}
           </Button>
