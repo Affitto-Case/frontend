@@ -49,9 +49,9 @@ export function MostPopularResidence({ color: defaultColor }: { color?: ColorTyp
         </div>
       </div>
 
-      <Card className={cn("border-2 shadow-xl overflow-hidden", theme.border)}>
+      <Card className={cn("border-2 shadow-xl overflow-hidden min-h-4", theme.border)}>
         <CardHeader className={cn("pb-8", theme.bg)}>
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between mt-4">
             <div>
               <CardTitle className="text-2xl font-black tracking-tight">Most Popular Residences</CardTitle>
               <CardDescription className="text-muted-foreground/80 font-medium">

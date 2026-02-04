@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react"
 import { useLocation } from "react-router-dom"
-import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import TableHost from "@/components/host/tableHost"
 import PromoteUserDialog from "@/components/host/createHostForm"
@@ -62,16 +61,12 @@ export function HostManage({ color: defaultColor }: { color?: ColorType }) {
       </div>
 
       <div className="flex flex-col gap-6">
-        <div className="flex justify-end">
-          <Button onClick={() => setPromoteDialogOpen(true)} className={cn(theme.button)}>
-            Promote User to Host
-          </Button>
-        </div>
 
         <div className={cn("rounded-md border-2 bg-card shadow-sm", theme.border)}>
           <TableHost
             hosts={hosts}
             onHostsChange={setHosts}
+            onUserPromoted={handleUserPromoted}
           />
         </div>
 

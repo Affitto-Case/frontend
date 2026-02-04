@@ -35,9 +35,9 @@ export function SuperHosts() {
         <h1 className="text-2xl font-bold tracking-tight">SuperHost Directory</h1>
       </div>
 
-      <Card className="border-2 border-primary/10 shadow-md">
+      <Card className="border-2 border-primary/10 shadow-md min-h-4">
         <CardHeader className="bg-primary/5 pb-6">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 mt-4">
             <div className="p-3 bg-white rounded-xl shadow-sm">
               <Award className="h-8 w-8 text-amber-500" />
             </div>

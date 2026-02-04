@@ -38,12 +38,7 @@ export function PromoteUserDialog({
   const API_URL = import.meta.env.VITE_API_URL
 
   useEffect(() => {
-    if (open) {
-      fetchUsers()
-    }
-  }, [open])
-
-  const fetchUsers = async () => {
+    const fetchUsers = async () => {
     try {
       const res = await fetch(`${API_URL}/api/v1/users`)
       const data: User[] = await res.json()
@@ -56,6 +51,10 @@ export function PromoteUserDialog({
       toast.error("Errore nel caricamento degli utenti")
     }
   }
+    if (open) {
+      fetchUsers()
+    }
+  }, [open])
 
   const handlePromote = async () => {
     if (!selectedUserId) return
