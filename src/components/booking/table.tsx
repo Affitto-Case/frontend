@@ -27,13 +27,9 @@ import { Separator } from "@/components/ui/separator"
 import { Label } from "@/components/ui/label"
 import { MoreHorizontalIcon, UserIcon, HomeIcon, CalendarDaysIcon, InfoIcon } from "lucide-react"
 import { toast } from "sonner"
-import type { Booking } from "@/types"
+import type { Booking, TableBookingProps } from "@/types"
 
-interface TableBookingProps {
-  bookings: Booking[];
-  onBookingUpdated?: (updated: Booking) => void;
-  onBookingDeleted?: (id: number) => void;
-}
+
 
 export function TableBooking({ 
   bookings, 

@@ -1,10 +1,37 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { Booking } from "@/types/index"
 import TableBooking from "@/components/booking/table"
 import CreateBookingForm from "@/components/booking/fromBooking"
+import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 
-export function BookingManage({ bookings: initialBookings }: { bookings: Booking[] }) {
-  const [bookings, setBookings] = useState<Booking[]>(initialBookings)
+export function BookingManage() {
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  const API_URL = import.meta.env.VITE_API_URL
+
+  useEffect(()=>{
+      setIsLoading(true);
+      const fetchBookings = async () => {
+        try{
+          const res = await fetch(`${API_URL}/api/v1/bookings`)
+          if(!res.ok){
+            throw new Error("Failed to fetch users")
+          }
+          const bookingsResp = await res.json();
+          setBookings(bookingsResp)
+          toast.success("Data loaded successfully");
+        } catch (error){
+          if (error instanceof Error) {
+            toast.error(error.message);
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchBookings();
+    },[])
 
   const handleFormSubmit = (data: Booking) => {
     console.log("Booking created:", data)
@@ -39,11 +66,19 @@ export function BookingManage({ bookings: initialBookings }: { bookings: Booking
         <div className="rounded-lg shadow-md p-6 mb-8">
           <CreateBookingForm onFormSubmit={handleFormSubmit} />
         </div>
+        <div className="lg:col-span-8 bg-white rounded-lg border shadow-sm">
+          {isLoading ? (
+            <div className="flex h-64 items-center justify-center">
+              <Loader2 className="size-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
         <TableBooking
           bookings={bookings}
           onBookingUpdated={handleBookingUpdated}
           onBookingDeleted={handleBookingDeleted}
         />
+         )}
+      </div>
       </div>
     </div>
   )

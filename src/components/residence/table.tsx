@@ -27,14 +27,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { MoreHorizontalIcon } from "lucide-react"
 import { toast } from "sonner"
-import type { Residence } from "@/types"
+import type { Residence, TableResidenceProps } from "@/types"
 
-// Definiamo l'interfaccia delle Props con callback opzionali
-interface TableResidenceProps {
-  residences: Residence[];
-  onResidenceUpdated?: (updated: Residence) => void; // Opzionale
-  onResidenceDeleted?: (id: number) => void;        // Opzionale
-}
+
+
 
 export function TableResidence({ 
   residences, 

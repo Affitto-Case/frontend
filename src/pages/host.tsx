@@ -14,10 +14,7 @@ export function HostManage() {
   const [promoteDialogOpen, setPromoteDialogOpen] = useState(false)
 
   useEffect(() => {
-    fetchHosts()
-  }, [])
-
-  const fetchHosts = async () => {
+    const fetchHosts = async () => {
     try {
       const res = await fetch(`${API_URL}/api/v1/hosts`)
       if (!res.ok) throw new Error("Failed to fetch hosts")
@@ -31,6 +28,8 @@ export function HostManage() {
       setLoading(false)
     }
   }
+    fetchHosts()
+  }, [])
 
   const handleUserPromoted = (newHost: Host) => {
     setHosts(prevHosts => [...prevHosts, newHost])

@@ -10,7 +10,10 @@ const FeedbackManage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const API_URL = import.meta.env.VITE_API_URL
 
-  const fetchFeedbacks = async () => {
+  
+
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
     try {
       const res = await fetch(`${API_URL}/api/v1/feedbacks`)
       if (!res.ok) throw new Error()
@@ -22,13 +25,11 @@ const FeedbackManage = () => {
       setIsLoading(false)
     }
   }
-
-  useEffect(() => {
-    fetchFeedbacks()
+  fetchFeedbacks()
   }, [])
 
-  const handleCreated = () => {
-    fetchFeedbacks()
+  const handleCreated = (newFeed: Feedback) => {
+    setFeedbacks(prev => [...prev, newFeed]);
   }
 
   const handleDelete = (id: number) => {

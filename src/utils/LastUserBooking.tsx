@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -23,8 +24,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { User, Booking } from "@/types";
-import { MoreHorizontalIcon, Calendar, Home, User as UserIcon } from "lucide-react";
+import { MoreHorizontalIcon, Calendar, Home, User as UserIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
+
 
 export function LastUserBooking({ users }: { users: User[] }) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -63,7 +66,7 @@ export function LastUserBooking({ users }: { users: User[] }) {
   const handleViewLastBooking = (user: User) => {
     setSelectedUser(user);
     setDialogOpen(true);
-    fetchLastBooking(user.id);
+    fetchLastBooking(user.userId);
   };
 
   return (
@@ -80,12 +83,12 @@ export function LastUserBooking({ users }: { users: User[] }) {
         </TableHeader>
         <TableBody>
           {users.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell className="font-medium">#{user.id}</TableCell>
+            <TableRow key={user.userId}>
+              <TableCell className="font-medium">#{user.userId}</TableCell>
               <TableCell>
-                {user.firstName} {user.lastName}
+                {user.userFirstName} {user.userLastName}
               </TableCell>
-              <TableCell>{user.email}</TableCell>
+              <TableCell>{user.userEmail}</TableCell>
               <TableCell>{user.address}</TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
@@ -109,107 +112,98 @@ export function LastUserBooking({ users }: { users: User[] }) {
 
       
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Last Booking</DialogTitle>
-            <DialogDescription>
-              Most recent booking for
-              {selectedUser && ` ${selectedUser.firstName} ${selectedUser.lastName}`}
-            </DialogDescription>
-          </DialogHeader>
+  <DialogContent className="max-w-lg">
+    <DialogHeader>
+      <DialogTitle>Last Booking Details</DialogTitle>
+      <DialogDescription>
+        Most recent reservation for {selectedUser?.userFirstName} {selectedUser?.userLastName}
+      </DialogDescription>
+    </DialogHeader>
 
-          {isLoadingBooking ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="text-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600 mx-auto mb-4"></div>
-                <p className="text-gray-500">Loading booking...</p>
-              </div>
+    {isLoadingBooking ? (
+      <div className="flex flex-col items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <p className="mt-2 text-sm text-muted-foreground">Loading details...</p>
+      </div>
+    ) : lastBooking ? (
+      <div className="space-y-6 py-4">
+        <div className="flex justify-between items-start">
+          <div>
+            <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Residence</h4>
+            <p className="text-lg font-semibold">{lastBooking.residenceName}</p>
+            <p className="text-sm text-muted-foreground">{lastBooking.residenceAddress}</p>
+          </div>
+          <div className="text-right">
+            <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Booking ID</h4>
+            <p className="text-lg font-mono font-bold">#{lastBooking.id}</p>
+          </div>
+        </div>
+
+        <Separator />
+
+        <div className="grid grid-cols-2 gap-8">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Calendar className="h-4 w-4" />
+              <span className="text-xs font-medium uppercase">Check-in</span>
             </div>
-          ) : lastBooking ? (
-            <div className="grid gap-4 py-4">
-              {/* Booking ID */}
-              <div className="flex items-center gap-3 rounded-lg border p-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
-                  <Calendar className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Booking ID</p>
-                  <p className="text-lg font-semibold">#{lastBooking.id}</p>
-                </div>
-              </div>
-
-              {/* User Info */}
-              <div className="flex items-center gap-3 rounded-lg border p-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
-                  <UserIcon className="h-6 w-6 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Guest</p>
-                  <p className="text-lg font-semibold">
-                    {lastBooking.userFirstName} {lastBooking.userLastName}
-                  </p>
-                  <p className="text-sm text-gray-500">{lastBooking.userEmail}</p>
-                </div>
-              </div>
-
-              {/* Residence Info */}
-              <div className="flex items-center gap-3 rounded-lg border p-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100">
-                  <Home className="h-6 w-6 text-purple-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-gray-500">Residence</p>
-                  <p className="text-lg font-semibold">{lastBooking.residenceName}</p>
-                  <p className="text-sm text-gray-500">
-                    {lastBooking.residenceAddress}
-                  </p>
-                </div>
-              </div>
-
-              {/* Dates Grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-lg border p-4">
-                  <p className="text-sm text-gray-500 mb-1">Check-in</p>
-                  <p className="text-xl font-bold text-gray-800">
-                    {new Date(lastBooking.startDate).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </p>
-                </div>
-                <div className="rounded-lg border p-4">
-                  <p className="text-sm text-gray-500 mb-1">Check-out</p>
-                  <p className="text-xl font-bold text-gray-800">
-                    {new Date(lastBooking.endDate).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </p>
-                </div>
-              </div>
-
-              {/* Duration */}
-              <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
-                <p className="text-sm text-blue-700 mb-1">Total Duration</p>
-                <p className="text-2xl font-bold text-blue-900">
-                  {Math.ceil(
-                    (new Date(lastBooking.endDate).getTime() -
-                      new Date(lastBooking.startDate).getTime()) /
-                      (1000 * 60 * 60 * 24)
-                  )}{" "}
-                  nights
-                </p>
-              </div>
+            <p className="text-sm font-medium">
+              {new Date(lastBooking.startDate).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })}
+            </p>
+          </div>
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Calendar className="h-4 w-4" />
+              <span className="text-xs font-medium uppercase">Check-out</span>
             </div>
-          ) : (
-            <div className="py-8 text-center text-gray-500">
-              <p>No bookings found for this user.</p>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+            <p className="text-sm font-medium">
+              {new Date(lastBooking.endDate).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })}
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-md bg-muted/50 p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <UserIcon className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs font-semibold uppercase tracking-tight text-muted-foreground">Guest Information</span>
+          </div>
+          <div>
+            <p className="text-sm font-medium">{lastBooking.userFirstName} {lastBooking.userLastName}</p>
+            <p className="text-xs text-muted-foreground">{lastBooking.userEmail}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between pt-2">
+          <span className="text-sm text-muted-foreground">Total stay duration:</span>
+          <span className="text-sm font-bold px-3 py-1 bg-primary/10 text-primary rounded-full">
+            {Math.ceil(
+              (new Date(lastBooking.endDate).getTime() - new Date(lastBooking.startDate).getTime()) / 
+              (1000 * 60 * 60 * 24)
+            )} nights
+          </span>
+        </div>
+      </div>
+    ) : (
+      <div className="py-10 text-center">
+        <p className="text-sm text-muted-foreground">No bookings found for this user.</p>
+      </div>
+    )}
+
+    <DialogFooter>
+      <Button variant="outline" onClick={() => setDialogOpen(false)}>
+        Close
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
     </>
   );
 }

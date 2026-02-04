@@ -27,13 +27,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { MoreHorizontalIcon } from "lucide-react"
 import { toast } from "sonner"
-import type { User } from "@/types"
+import type { TableUserProps, User } from "@/types"
 
-interface TableUserProps {
-  users: User[]
-  onUserUpdated?: (user: User) => void
-  onUserDeleted?: (userId: number) => void
-}
+
 
 export function TableUser({ users, onUserUpdated, onUserDeleted }: TableUserProps) {
   const [editDialogOpen, setEditDialogOpen] = useState(false)

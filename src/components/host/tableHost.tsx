@@ -25,12 +25,9 @@ import {
 } from "@/components/ui/table"
 import { MoreHorizontalIcon, Star, UserIcon, Mail, MapPin, Calendar, Hash, BarChart3 } from "lucide-react"
 import { toast } from "sonner"
-import type { Host } from "@/types"
+import type { Host, TableHostProps } from "@/types"
 
-interface TableHostProps {
-  hosts: Host[]
-  onHostsChange: (hosts: Host[]) => void
-}
+
 
 export function TableHost({ hosts, onHostsChange }: TableHostProps) {
   const [viewDialogOpen, setViewDialogOpen] = useState(false)

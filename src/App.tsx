@@ -11,6 +11,11 @@ import HostManage from "./pages/host";
 import ResidenceManage from "./pages/residences";
 import BookingManage from "./pages/booking";
 import FeedbackManage from "./pages/feedback";
+import MostPopularResidence from "./utils/MostPopularResidence";
+import TopHosts from "./utils/MostPopularHosts";
+import SuperHosts from "./utils/AllSuperHosts";
+import TopUsersMonthly from "./utils/TopUsersDayBooking";
+import AvgBedsStats from "./utils/AvgBeds";
 
 
 export function App() {
@@ -96,17 +101,17 @@ export function App() {
       <Route path="/query/" element={<Layout />}>
         <Route path="residencesByHostCode" element={<ResidenceByHostCode />} />
         <Route path="lastUserBooking" element={<LastUserBooking users={users} />} />
-        {/*<Route path="mostPopularResidence" element={<MostPopularResidence />} />
-    <Route path="topHostsThisMonth" element={<TopHostsThisMonth />} />
-    <Route path="superHosts" element={<SuperHosts />} />
-    <Route path="topUsersThisMonth" element={<TopUsersThisMonth />} />
-    <Route path="averageBeds" element={<AverageBeds />} /> */}
+        <Route path="mostPopularResidence" element={<MostPopularResidence />} />
+        <Route path="topHostsThisMonth" element={<TopHosts />} />
+        <Route path="superHosts" element={<SuperHosts />} />
+        <Route path="topUsersThisMonth" element={<TopUsersMonthly />} />
+        <Route path="averageBeds" element={<AvgBedsStats />} />
       </Route>
       <Route path="/crud/" element={<Layout />}>
-        <Route path="user" element={<UserManage users={users} />} />
+        <Route path="user" element={<UserManage />} />
         <Route path="host" element={<HostManage />} />
-        <Route path="residence" element={<ResidenceManage residences={residences}/>} />
-        <Route path="booking" element={<BookingManage bookings={bookings}/>} />
+        <Route path="residence" element={<ResidenceManage/>} />
+        <Route path="booking" element={<BookingManage/>} />
         <Route path="feedback" element={<FeedbackManage/>} />
       </Route>
     </Routes>

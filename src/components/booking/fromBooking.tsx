@@ -9,8 +9,7 @@ import { toast } from "sonner"
 import { 
   CalendarDays, 
   Info, 
-  Home, 
-  User as UserIcon, 
+  Home,  
   AlertCircle, 
   Loader2, 
   ExternalLink 
@@ -122,7 +121,7 @@ const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) =>
       <div className="flex flex-col md:flex-row gap-6 items-start">
         
         {/* FORM PANEL */}
-        <form className="w-full md:w-[380px] space-y-6 p-6 bg-white rounded-lg border border-border shadow-sm" onSubmit={handleSubmit(onSubmit)}>
+        <form className="w-full md:w-95 space-y-6 p-6 bg-white rounded-lg border border-border shadow-sm" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <h2 className="text-lg font-semibold tracking-tight">Create Booking</h2>
             <p className="text-sm text-muted-foreground">Enter details for the new reservation.</p>
@@ -174,7 +173,7 @@ const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) =>
         </form>
 
         {/* INFO PANEL */}
-        <div className="flex-1 w-full min-h-[450px] rounded-lg border border-border bg-card text-card-foreground shadow-sm">
+        <div className="flex-1 w-full min-h-112.5 rounded-lg border border-border bg-card text-card-foreground shadow-sm">
           {isFetchingBookings ? (
             <div className="h-full flex flex-col items-center justify-center p-8">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -203,7 +202,7 @@ const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) =>
                   <Separator />
                   
                   {currentBookings.length > 0 ? (
-                    <div className="grid gap-2 max-h-[250px] overflow-y-auto pr-2">
+                    <div className="grid gap-2 max-h-62.5 overflow-y-auto pr-2">
                       {currentBookings.map((b) => (
                         <div 
                           key={b.id} 
@@ -243,7 +242,7 @@ const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) =>
 
       {/* STANDARD SHADCN DIALOG */}
       <Dialog open={!!viewingBooking} onOpenChange={() => setViewingBooking(null)}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-106.25">
           <DialogHeader>
             <DialogTitle>Booking Details</DialogTitle>
             <DialogDescription>

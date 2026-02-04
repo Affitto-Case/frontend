@@ -89,4 +89,45 @@ export const userSchema = z.object({
 
 export type UserFormValues = z.infer<typeof userSchema>
 
+export interface TableBookingProps {
+  bookings: Booking[];
+  onBookingUpdated?: (updated: Booking) => void;
+  onBookingDeleted?: (id: number) => void;
+}
+
+export interface PromoteUserDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onUserPromoted: (newHost: Host) => void
+  existingHosts: Host[]
+}
+
+export interface TableHostProps {
+  hosts: Host[]
+  onHostsChange: (hosts: Host[]) => void
+}
+
+export interface TableResidenceProps {
+  residences: Residence[];
+  onResidenceUpdated?: (updated: Residence) => void; 
+  onResidenceDeleted?: (id: number) => void;        
+}
+
+export interface TableUserProps {
+  users: User[]
+  onUserUpdated?: (user: User) => void
+  onUserDeleted?: (userId: number) => void
+}
+
+export interface TopUserStats {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  totalDays: number;
+}
+
+export interface AvgBedsResponse {
+  avgnumberOfBeds: number;
+}
 

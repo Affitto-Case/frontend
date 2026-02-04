@@ -1,11 +1,38 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import type { Residence } from "@/types/index"
 import TableResidence from "@/components/residence/table"
 import CreateResidenceForm from "@/components/residence/formResidence"
+import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 
-export function ResidenceManage({ residences: initialResidences }: { residences: Residence[] }) {
+export function ResidenceManage() {
   // Stato tipizzato correttamente come array di Residence
-  const [residences, setResidences] = useState<Residence[]>(initialResidences)
+  const [residences, setResidences] = useState<Residence[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  const API_URL = import.meta.env.VITE_API_URL
+
+  useEffect(()=>{
+    setIsLoading(true);
+    const fetchResidences = async () => {
+      try{
+        const res = await fetch(`${API_URL}/api/v1/residences`)
+        if(!res.ok){
+          throw new Error("Failed to fetch residences")
+        }
+        const residencesResp = await res.json();
+        setResidences(residencesResp)
+        toast.success("Data loaded successfully");
+      } catch (error){
+        if (error instanceof Error) {
+          toast.error(error.message);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchResidences();
+  },[])
 
   const handleFormSubmit = (data: Residence) => {
     console.log("Residence created:", data)
@@ -42,11 +69,19 @@ export function ResidenceManage({ residences: initialResidences }: { residences:
         <div className="rounded-lg shadow-md p-6 mb-8">
           <CreateResidenceForm onFormSubmit={handleFormSubmit} />
         </div>
+        <div className="lg:col-span-8 bg-white rounded-lg border shadow-sm">
+                  {isLoading ? (
+                    <div className="flex h-64 items-center justify-center">
+                      <Loader2 className="size-8 animate-spin text-muted-foreground" />
+                    </div>
+                  ) : (
         <TableResidence
           residences={residences}
           onResidenceUpdated={handleResidenceUpdated}
           onResidenceDeleted={handleResidenceDeleted}
         />
+         )}
+      </div>
       </div>
     </div>
   )

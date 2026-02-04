@@ -18,15 +18,9 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
-import type { Host } from "@/types"
-import type { User } from "@/types"
+import type { Host,PromoteUserDialogProps,User, } from "@/types"
 
-interface PromoteUserDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onUserPromoted: (newHost: Host) => void
-  existingHosts: Host[]
-}
+
 
 export function PromoteUserDialog({ 
   open, 
