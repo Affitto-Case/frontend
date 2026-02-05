@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import TableHost from "@/components/host/tableHost"
-import { Shield } from "lucide-react"
-import type { Host } from "@/types"
+import { Shield, Loader2 } from "lucide-react"
+import type { Host, User } from "@/types"
+import { Input } from "@/components/ui/input"
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -10,28 +11,35 @@ export function HostManage() {
 
   const [hosts, setHosts] = useState<Host[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchHost, setSearchHost] = useState("")
 
   useEffect(() => {
-    const fetchHosts = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/v1/hosts`)
-        if (!res.ok) throw new Error("Failed to fetch hosts")
+        setLoading(true)
+        const hostsRes = await fetch(`${API_URL}/api/v1/hosts`)
+        if (!hostsRes.ok) throw new Error("Failed to fetch data")
+        const hostsData: Host[] = await hostsRes.json()
 
-        const data: Host[] = await res.json()
-        setHosts(data)
+        setHosts(hostsData)
       } catch (error) {
         console.error(error)
-        toast.error("Errore nel caricamento degli host")
+        toast.error("Errore nel caricamento dei dati")
       } finally {
         setLoading(false)
       }
     }
-    fetchHosts()
+    fetchData()
   }, [])
 
-  const handleUserPromoted = (newHost: Host) => {
-    setHosts(prevHosts => [...prevHosts, newHost])
-  }
+
+  const filteredHosts = hosts.filter((h) =>
+    h.firstName.toLowerCase().includes(searchHost.toLowerCase()) ||
+    h.lastName.toLowerCase().includes(searchHost.toLowerCase()) ||
+    h.email.toLowerCase().includes(searchHost.toLowerCase()) ||
+    h.hostCode.toLowerCase().includes(searchHost.toLowerCase()) ||
+    (h.firstName.toLowerCase() + " " + h.lastName.toLowerCase()).includes(searchHost.toLowerCase())
+  )
 
   if (loading) {
     return (
@@ -48,17 +56,29 @@ export function HostManage() {
           <Shield className="size-6" />
           <h1 className="text-2xl font-bold tracking-tight">Host Management</h1>
         </div>
-        <p className="text-sm text-muted-foreground hidden md:block">
-          Manage permissions and view host statistics.
-        </p>
+        <div className="flex items-center gap-4">
+          <div className="w-64">
+            <Input
+              placeholder="Search hosts..."
+              value={searchHost}
+              onChange={(e) => setSearchHost(e.target.value)}
+              className="bg-background"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="w-full bg-card rounded-lg border shadow-sm">
-        <TableHost
-          hosts={hosts}
-          onHostsChange={setHosts}
-          onUserPromoted={handleUserPromoted}
-        />
+        {loading ? (
+          <div className="flex h-64 items-center justify-center">
+            <Loader2 className="size-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : (
+          <TableHost
+            hosts={filteredHosts}
+            onHostsChange={setHosts}
+          />
+        )}
       </div>
     </div>
   )

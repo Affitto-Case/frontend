@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -27,17 +27,36 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { MoreHorizontalIcon } from "lucide-react"
 import { toast } from "sonner"
-import type { TableUserProps, User } from "@/types"
+import type { Host, TableUserProps, User } from "@/types"
 
 
 
 export function TableUser({ users, onUserUpdated, onUserDeleted }: TableUserProps) {
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [promoteDialogOpen, setPromoteDialogOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [formData, setFormData] = useState<User | null>(null)
+  const [hosts, setHosts] = useState<Host[]>([])
+  const [isPromoting, setIsPromoting] = useState(false)
 
   const API_URL = import.meta.env.VITE_API_URL
+
+  useEffect(()=>{
+    const fetchData = async () => {
+          try {
+            const hostsRes = await fetch(`${API_URL}/api/v1/hosts`)
+            if (!hostsRes.ok) throw new Error("Failed to fetch data")
+            const hostsData: Host[] = await hostsRes.json()
+    
+            setHosts(hostsData)
+          } catch (error) {
+            console.error(error)
+            toast.error("Errore nel caricamento dei dati")
+          } 
+        }
+        fetchData()
+  },[])
 
   const handleEdit = (user: User) => {
     setSelectedUser(user)
@@ -48,6 +67,40 @@ export function TableUser({ users, onUserUpdated, onUserDeleted }: TableUserProp
   const handleDeleteClick = (user: User) => {
     setSelectedUser(user)
     setDeleteDialogOpen(true)
+  }
+
+  const handlePromoteUser = (user: User) =>{
+    setSelectedUser(user)
+    setPromoteDialogOpen(true)
+  }
+
+  const handlePromoteSubmit = async () => {
+    if (!selectedUser) return
+    
+    setIsPromoting(true)
+    const promoteUserReq = {
+      userId: selectedUser.userId
+    }
+    
+    try {
+      const res = await fetch(`${API_URL}/api/v1/hosts`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(promoteUserReq)
+      })
+      
+      if (!res.ok) throw new Error("Promotion failed")
+      
+      const newHost: Host = await res.json()
+      setHosts(prev => [...prev, newHost])
+      toast.success("User promoted to Host successfully!")
+      setPromoteDialogOpen(false)
+    } catch (error) {
+      toast.error("Failed to promote user")
+      console.error(error)
+    } finally {
+      setIsPromoting(false)
+    }
   }
 
   const handleEditSubmit = async () => {
@@ -156,6 +209,16 @@ export function TableUser({ users, onUserUpdated, onUserDeleted }: TableUserProp
                     <DropdownMenuItem onClick={() => handleEdit(u)}>
                       Edit
                     </DropdownMenuItem>
+                    {!hosts.some(h => h.id === u.userId) && (
+                      <DropdownMenuItem onClick={() => handlePromoteUser(u)}>
+                        Promote
+                      </DropdownMenuItem>
+                    )}
+                    {hosts.some(h => h.id === u.userId) && (
+                      <DropdownMenuItem disabled className="text-muted-foreground italic">
+                        Already Host
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       className="text-red-600"
@@ -163,6 +226,7 @@ export function TableUser({ users, onUserUpdated, onUserDeleted }: TableUserProp
                     >
                       Delete
                     </DropdownMenuItem>
+
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
@@ -266,6 +330,42 @@ export function TableUser({ users, onUserUpdated, onUserDeleted }: TableUserProp
             </Button>
           </DialogFooter>
         </DialogContent>
+      </Dialog>
+
+       {/* PROMOTE DIALOG  */}
+      <Dialog open={promoteDialogOpen} onOpenChange={setPromoteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Promote User</DialogTitle>
+            <DialogDescription>
+              Promote this user in host.
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedUser && (
+            <div className="py-4">
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold">Name:</span> {selectedUser.userFirstName} {selectedUser.userLastName}
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold">Email:</span> {selectedUser.userEmail}
+              </p>
+              <p className="text-sm text-gray-600">
+                <span className="font-semibold">Address:</span> {selectedUser.address}
+              </p>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPromoteDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handlePromoteSubmit} disabled={isPromoting}>
+              {isPromoting ? "Promoting..." : "Confirm Promotion"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+
       </Dialog>
     </>
   )

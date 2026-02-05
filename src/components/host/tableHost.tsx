@@ -16,56 +16,13 @@ import { Input } from "@/components/ui/input"
 
 
 
-export function TableHost({ hosts, onHostsChange, onUserPromoted }: { hosts: Host[], onHostsChange: (hosts: Host[]) => void, onUserPromoted: (host: Host) => void }) {
+export function TableHost({ hosts, onHostsChange }: { hosts: Host[], onHostsChange: (hosts: Host[]) => void }) {
   const [viewDialogOpen, setViewDialogOpen] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [selectedHost, setSelectedHost] = useState<Host | null>(null)
-  const [selectedUserId, setSelectedUserId] = useState<string>("")
   const [loading, setLoading] = useState(false)
-  const [noHost, setNoHost] = useState<User[]>([])
-  const [searchUser, setSearchUser] = useState("")
-  const [searchHost, setSearchHost] = useState("")
 
   const API_URL = import.meta.env.VITE_API_URL
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/v1/users`)
-        const data: User[] = await res.json()
-        const hostIds = new Set(hosts.map(h => h.id.toString()))
-        setNoHost(data.filter(u => !hostIds.has(u.userId.toString())))
-      } catch (error) {
-        toast.error("Errore nel caricamento degli utenti")
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchUsers()
-  }, [])
-
-  const handlePromote = async () => {
-    if (!selectedUserId) return
-    setLoading(true)
-
-    try {
-      const res = await fetch(`${API_URL}/api/v1/hosts/${selectedUserId}`, {
-        method: "POST",
-      })
-
-      if (!res.ok) throw new Error("Promozione fallita")
-
-      const newHost: Host = await res.json()
-      toast.success("Utente promosso a Host!")
-      onUserPromoted(newHost)
-      setSelectedUserId("")
-    } catch (error) {
-      toast.error("Errore durante la promozione")
-    } finally {
-      setLoading(false)
-    }
-  }
-
 
   // Open the view dialog
   const handleViewClick = (host: Host) => {
@@ -99,63 +56,14 @@ export function TableHost({ hosts, onHostsChange, onUserPromoted }: { hosts: Hos
   }
 
 
-  const filteredUsers = noHost.filter((u) =>
-    u.userFirstName.toLowerCase().includes(searchUser.toLowerCase()) ||
-    u.userLastName.toLowerCase().includes(searchUser.toLowerCase()) ||
-    u.userEmail.toLowerCase().includes(searchUser.toLowerCase()) ||
-    (u.userFirstName.toLowerCase() + " " + u.userLastName.toLowerCase()).includes(searchUser.toLowerCase())
-  )
-
-  const filteredHosts = hosts.filter((h) =>
-    h.firstName.toLowerCase().includes(searchHost.toLowerCase()) ||
-    h.lastName.toLowerCase().includes(searchHost.toLowerCase()) ||
-    h.email.toLowerCase().includes(searchHost.toLowerCase()) ||
-    h.hostCode.toLowerCase().includes(searchHost.toLowerCase()) ||
-    (h.firstName.toLowerCase() + " " + h.lastName.toLowerCase()).includes(searchHost.toLowerCase())
-  )
-
   return (
     <>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 p-6">
-        <div className="lg:col-span-7 space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
-              <Star className="size-5 text-yellow-600" />
-              Current Hosts
-            </h2>
-            <div className="w-48">
-              <Input
-                placeholder="Search hosts..."
-                value={searchHost}
-                onChange={(e) => setSearchHost(e.target.value)}
-                className="bg-background"
-              />
-            </div>
-          </div>
-          <div className="rounded-md border bg-card">
-            <TableCrud hosts={filteredHosts} handleViewClick={handleViewClick} handleDeleteClick={handleDeleteClick} />
-          </div>
-        </div>
-
-        <div className="lg:col-span-5 space-y-4">
-          <div className="flex items-center justify-between gap-4">
-            <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
-              <UserIcon className="size-5 text-primary" />
-              Promotion List
-            </h2>
-            <div className="w-48">
-              <Input
-                placeholder="Search users..."
-                value={searchUser}
-                onChange={(e) => setSearchUser(e.target.value)}
-                className="bg-background"
-              />
-            </div>
-          </div>
-          <div className="rounded-md border bg-card">
-            <TableCrud users={filteredUsers} handlePromoteClick={handlePromote} className="w-full overflow-x-auto" />
-          </div>
-        </div>
+      <div className="w-full">
+        <TableCrud
+          hosts={hosts}
+          handleViewClick={handleViewClick}
+          handleDeleteClick={handleDeleteClick}
+        />
       </div>
 
       <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>

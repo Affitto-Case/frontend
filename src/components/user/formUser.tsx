@@ -42,8 +42,6 @@ const CreateUserForm = ({ onFormSubmit }: { onFormSubmit?: (data: UserResponse) 
     console.log("Form errors:", errors)
 
     const onSubmit = async (formData: UserFormValues) => {
-        console.log("onSubmit called with:", formData)
-        console.log("API_URL:", API_URL)
 
         try {
             const url = `${API_URL}/api/v1/users`

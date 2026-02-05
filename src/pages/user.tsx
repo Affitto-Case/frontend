@@ -58,7 +58,7 @@ export function UserManage() {
         <Users className="size-6" />
         <h1 className="text-2xl font-bold tracking-tight">User Management</h1>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex justify-center items-center gap-4">
         <div className="w-48">
               <Input
                 placeholder="Search users..."
