@@ -6,9 +6,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from "zod"
 import { toast } from "sonner"
-import type { Host, Residence, ColorType } from "@/types"
-import { colorClasses } from "@/types"
-import { cn } from "@/lib/utils"
+import type { Host, Residence } from "@/types"
 
 const residenceFormSchema = z.object({
     name: z.string().min(1, "Il nome è obbligatorio"),
@@ -26,7 +24,7 @@ type ResidenceFormValues = z.infer<typeof residenceFormSchema>
 
 const API_URL = import.meta.env.VITE_API_URL
 
-const CreateResidenceForm = ({ onFormSubmit, color }: { onFormSubmit?: (data: Residence) => void, color: ColorType }) => {
+const CreateResidenceForm = ({ onFormSubmit }: { onFormSubmit?: (data: Residence) => void }) => {
     const [hosts, setHosts] = useState<Host[]>([])
     const [isLoadingHosts, setIsLoadingHosts] = useState(true)
 
@@ -85,7 +83,7 @@ const CreateResidenceForm = ({ onFormSubmit, color }: { onFormSubmit?: (data: Re
     }
 
     return (
-        <form className="space-y-4 max-w-xl mx-auto p-6" onSubmit={handleSubmit(onSubmit)}>
+        <form className="space-y-4 p-6 bg-card rounded-xl border-2 shadow-sm" onSubmit={handleSubmit(onSubmit)}>
             <h1 className="text-2xl font-bold text-center mb-6">CREATE RESIDENCE</h1>
 
             <div className="space-y-2">
@@ -150,7 +148,7 @@ const CreateResidenceForm = ({ onFormSubmit, color }: { onFormSubmit?: (data: Re
                 </div>
             </div>
 
-            <Button type="submit" className={cn("w-full", colorClasses[color].button)} disabled={isSubmitting || isLoadingHosts}>
+            <Button type="submit" className="w-full" disabled={isSubmitting || isLoadingHosts}>
                 {isSubmitting ? "Saving..." : "Create Residence"}
             </Button>
         </form>

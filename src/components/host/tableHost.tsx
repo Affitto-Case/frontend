@@ -23,6 +23,8 @@ export function TableHost({ hosts, onHostsChange, onUserPromoted }: { hosts: Hos
   const [selectedUserId, setSelectedUserId] = useState<string>("")
   const [loading, setLoading] = useState(false)
   const [noHost, setNoHost] = useState<User[]>([])
+  const [searchUser, setSearchUser] = useState("")
+  const [searchHost, setSearchHost] = useState("")
 
   const API_URL = import.meta.env.VITE_API_URL
 
@@ -96,32 +98,32 @@ export function TableHost({ hosts, onHostsChange, onUserPromoted }: { hosts: Hos
     }
   }
 
-  const [searchUser, setSearchUser] = useState("")
-  const [searchHost, setSearchHost] = useState("")
 
   const filteredUsers = noHost.filter((u) =>
     u.userFirstName.toLowerCase().includes(searchUser.toLowerCase()) ||
     u.userLastName.toLowerCase().includes(searchUser.toLowerCase()) ||
-    u.userEmail.toLowerCase().includes(searchUser.toLowerCase())
+    u.userEmail.toLowerCase().includes(searchUser.toLowerCase()) ||
+    (u.userFirstName.toLowerCase() + " " + u.userLastName.toLowerCase()).includes(searchUser.toLowerCase())
   )
 
-    const filteredHosts = hosts.filter((h) =>
+  const filteredHosts = hosts.filter((h) =>
     h.firstName.toLowerCase().includes(searchHost.toLowerCase()) ||
     h.lastName.toLowerCase().includes(searchHost.toLowerCase()) ||
     h.email.toLowerCase().includes(searchHost.toLowerCase()) ||
-    h.hostCode.toLowerCase().includes(searchHost.toLowerCase())
+    h.hostCode.toLowerCase().includes(searchHost.toLowerCase()) ||
+    (h.firstName.toLowerCase() + " " + h.lastName.toLowerCase()).includes(searchHost.toLowerCase())
   )
 
   return (
     <>
-      <div className="flex flex-col gap-10">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-4 p-6 mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 p-6">
+        <div className="lg:col-span-7 space-y-4">
+          <div className="flex items-center justify-between gap-4">
             <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
               <Star className="size-5 text-yellow-600" />
               Current Hosts
             </h2>
-            <div className="w-64">
+            <div className="w-48">
               <Input
                 placeholder="Search hosts..."
                 value={searchHost}
@@ -130,18 +132,18 @@ export function TableHost({ hosts, onHostsChange, onUserPromoted }: { hosts: Hos
               />
             </div>
           </div>
-          <div className="rounded-md border bg-card max-w-4xl mx-auto">
+          <div className="rounded-md border bg-card">
             <TableCrud hosts={filteredHosts} handleViewClick={handleViewClick} handleDeleteClick={handleDeleteClick} />
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-4 p-6 mx-auto">
+        <div className="lg:col-span-5 space-y-4">
+          <div className="flex items-center justify-between gap-4">
             <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
               <UserIcon className="size-5 text-primary" />
-              Users Eligible for Promotion
+              Promotion List
             </h2>
-            <div className="w-64">
+            <div className="w-48">
               <Input
                 placeholder="Search users..."
                 value={searchUser}
@@ -150,7 +152,7 @@ export function TableHost({ hosts, onHostsChange, onUserPromoted }: { hosts: Hos
               />
             </div>
           </div>
-          <div className="rounded-md border bg-card max-w-4xl mx-auto mb-7 ">
+          <div className="rounded-md border bg-card">
             <TableCrud users={filteredUsers} handlePromoteClick={handlePromote} className="w-full overflow-x-auto" />
           </div>
         </div>
@@ -167,7 +169,7 @@ export function TableHost({ hosts, onHostsChange, onUserPromoted }: { hosts: Hos
 
           {selectedHost && (
             <div className="grid gap-4 py-4">
-              <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50 border">
+              <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/30 border">
                 <div className="p-2 bg-background rounded-full shadow-sm">
                   <UserIcon className="size-8 text-primary" />
                 </div>

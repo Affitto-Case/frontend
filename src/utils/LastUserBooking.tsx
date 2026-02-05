@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,22 +22,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { colorClasses, type ColorType, type User, type Booking } from "@/types";
+import { type User, type Booking } from "@/types";
 import { MoreHorizontalIcon, Calendar, Home, User as UserIcon, Loader2, History } from "lucide-react";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
 
 
-export function LastUserBooking({ users, color: defaultColor }: { users: User[], color?: ColorType }) {
-  const location = useLocation()
-  const themeColor = (location.state as { themeColor?: ColorType })?.themeColor || defaultColor || "blue"
-  const theme = colorClasses[themeColor]
-
+export function LastUserBooking({ users }: { users: User[] }) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [lastBooking, setLastBooking] = useState<Booking | null>(null);
   const [isLoadingBooking, setIsLoadingBooking] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [searchUser, setSearchUser] = useState<string>("")
+
+
+
 
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -74,38 +73,55 @@ export function LastUserBooking({ users, color: defaultColor }: { users: User[],
     fetchLastBooking(user.userId);
   };
 
+  const filteredUsers = users.filter((user) =>
+    user.userFirstName.toLowerCase().includes(searchUser.toLowerCase()) ||
+    user.userLastName.toLowerCase().includes(searchUser.toLowerCase()) ||
+    user.userEmail.toLowerCase().includes(searchUser.toLowerCase()) ||
+    (user.userFirstName.toLowerCase() + " " + user.userLastName.toLowerCase()).includes(searchUser.toLowerCase())
+  );
+
+
   return (
     <div className="container mx-auto px-6 py-8 space-y-8">
       <div className="flex items-center gap-2 border-b pb-4">
-        <History className={cn("size-6", theme.icon)} />
+        <History className="size-6" />
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Last User Bookings</h1>
           <p className="text-sm text-muted-foreground">Trace the most recent activity across all guests</p>
         </div>
       </div>
-
-      <div className={cn("rounded-xl border-2 bg-white shadow-sm overflow-hidden", theme.border)}>
+      <div className="w-64">
+        <Input
+          placeholder="Search users..."
+          value={searchUser}
+          onChange={(e) => setSearchUser(e.target.value)}
+          className="bg-background"
+        />
+      </div>
+      <div className="rounded-xl border-2 bg-white shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className={cn("hover:bg-transparent", theme.bg)}>
+            <TableRow className="hover:bg-transparent bg-muted/20">
               <TableHead className="font-bold">Name</TableHead>
+              <TableHead className="font-bold">Surname</TableHead>
               <TableHead className="font-bold">Email</TableHead>
               <TableHead className="font-bold">Address</TableHead>
               <TableHead className="text-right font-bold">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <TableRow key={user.userId} className="hover:bg-muted/50 transition-colors">
                 <TableCell className="font-medium">
-                  {user.userFirstName} {user.userLastName}
+                  {user.userFirstName}
                 </TableCell>
+                <TableCell className="font-medium">{user.userLastName}</TableCell>
                 <TableCell className="text-muted-foreground">{user.userEmail}</TableCell>
                 <TableCell className="text-muted-foreground italic">{user.address}</TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className={cn("size-8 rounded-full", theme.icon, "hover:bg-muted")}>
+                      <Button variant="ghost" size="icon" className="size-8 rounded-full hover:bg-muted">
                         <MoreHorizontalIcon className="size-4" />
                         <span className="sr-only">Open menu</span>
                       </Button>
@@ -128,7 +144,7 @@ export function LastUserBooking({ users, color: defaultColor }: { users: User[],
         <DialogContent className="max-w-lg border-2">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <UserIcon className={cn("h-5 w-5", theme.icon)} />
+              <UserIcon className="h-5 w-5 text-primary" />
               Last Booking Details
             </DialogTitle>
             <DialogDescription>
@@ -138,12 +154,12 @@ export function LastUserBooking({ users, color: defaultColor }: { users: User[],
 
           {isLoadingBooking ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <Loader2 className={cn("h-10 w-10 animate-spin mb-4", theme.icon)} />
+              <Loader2 className="h-10 w-10 animate-spin mb-4 text-primary" />
               <p className="text-sm text-muted-foreground animate-pulse font-medium">Retrieving booking history...</p>
             </div>
           ) : lastBooking ? (
             <div className="space-y-6 py-4">
-              <div className={cn("p-4 rounded-xl border bg-card/50", theme.border)}>
+              <div className="p-4 rounded-xl border bg-card/50">
                 <div className="flex justify-between items-start">
                   <div>
                     <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Residence</h4>
@@ -155,13 +171,13 @@ export function LastUserBooking({ users, color: defaultColor }: { users: User[],
                   </div>
                   <div className="text-right">
                     <h4 className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">ID</h4>
-                    <p className={cn("text-lg font-mono font-black", theme.icon)}>#{lastBooking.id}</p>
+                    <p className="text-lg font-mono font-black text-primary">#{lastBooking.id}</p>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className={cn("p-4 rounded-xl border bg-muted/30", theme.border)}>
+                <div className="p-4 rounded-xl border bg-muted/30">
                   <div className="flex items-center gap-2 text-muted-foreground mb-1">
                     <Calendar className="h-4 w-4" />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Check-in</span>
@@ -174,7 +190,7 @@ export function LastUserBooking({ users, color: defaultColor }: { users: User[],
                     })}
                   </p>
                 </div>
-                <div className={cn("p-4 rounded-xl border bg-muted/30", theme.border)}>
+                <div className="p-4 rounded-xl border bg-muted/30">
                   <div className="flex items-center gap-2 text-muted-foreground mb-1">
                     <Calendar className="h-4 w-4" />
                     <span className="text-[10px] font-bold uppercase tracking-wider">Check-out</span>
@@ -189,14 +205,14 @@ export function LastUserBooking({ users, color: defaultColor }: { users: User[],
                 </div>
               </div>
 
-              <div className={cn("flex items-center justify-between p-4 rounded-xl border", theme.bg, theme.border)}>
+              <div className="flex items-center justify-between p-4 rounded-xl border bg-muted/20">
                 <div className="flex items-center gap-3">
-                  <div className={cn("p-2 rounded-lg bg-white border shadow-sm", theme.icon)}>
+                  <div className="p-2 rounded-lg bg-card border shadow-sm text-primary">
                     <History className="size-4" />
                   </div>
                   <span className="text-sm font-medium">Total stay duration</span>
                 </div>
-                <span className={cn("text-sm font-black px-4 py-1 rounded-full text-white", theme.button.split(" ")[0])}>
+                <span className="text-sm font-black px-4 py-1 rounded-full text-white bg-primary">
                   {Math.ceil(
                     (new Date(lastBooking.endDate).getTime() - new Date(lastBooking.startDate).getTime()) /
                     (1000 * 60 * 60 * 24)

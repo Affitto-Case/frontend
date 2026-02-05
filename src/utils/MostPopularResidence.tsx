@@ -1,17 +1,13 @@
 import { useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { colorClasses, type ColorType, type Residence } from "@/types";
+import { type Residence } from "@/types";
 import { TrendingUp, Home, Inbox, MapPin, Star } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 
-export function MostPopularResidence({ color: defaultColor }: { color?: ColorType }) {
-  const location = useLocation()
-  const themeColor = (location.state as { themeColor?: ColorType })?.themeColor || defaultColor || "blue"
-  const theme = colorClasses[themeColor]
+export function MostPopularResidence() {
 
   const [residences, setResidences] = useState<Residence[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -42,15 +38,15 @@ export function MostPopularResidence({ color: defaultColor }: { color?: ColorTyp
   return (
     <div className="container mx-auto px-6 py-8 space-y-8">
       <div className="flex items-center gap-2 border-b pb-4">
-        <TrendingUp className={cn("size-6", theme.icon)} />
+        <TrendingUp className="size-6" />
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Market Highlights</h1>
           <p className="text-sm text-muted-foreground">Uncover the most sought-after properties this month</p>
         </div>
       </div>
 
-      <Card className={cn("border-2 shadow-xl overflow-hidden min-h-4", theme.border)}>
-        <CardHeader className={cn("pb-8", theme.bg)}>
+      <Card className="border-2 shadow-xl overflow-hidden min-h-4">
+        <CardHeader className="pb-8 bg-muted/20">
           <div className="flex items-start justify-between mt-4">
             <div>
               <CardTitle className="text-2xl font-black tracking-tight">Most Popular Residences</CardTitle>
@@ -58,8 +54,8 @@ export function MostPopularResidence({ color: defaultColor }: { color?: ColorTyp
                 Ranking determined by highest booking volume over the last 30 days
               </CardDescription>
             </div>
-            <div className="bg-white/50 backdrop-blur-sm p-3 rounded-2xl border border-white shadow-sm">
-              <Star className={cn("h-6 w-6 fill-current", theme.icon)} />
+            <div className="bg-card/50 backdrop-blur-sm p-3 rounded-2xl border border-border shadow-sm">
+              <Star className="h-6 w-6 fill-amber-400 text-amber-400" />
             </div>
           </div>
         </CardHeader>
@@ -71,10 +67,10 @@ export function MostPopularResidence({ color: defaultColor }: { color?: ColorTyp
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6 p-8 transition-all hover:bg-muted/30">
                   <div className="flex items-center gap-6">
                     <div className="relative">
-                      <div className={cn("h-16 w-16 rounded-2xl flex items-center justify-center border-2 transition-transform group-hover:scale-105", theme.bg, theme.border)}>
-                        <Home className={cn("h-8 w-8", theme.icon)} />
+                      <div className="h-16 w-16 rounded-2xl flex items-center justify-center border-2 transition-transform group-hover:scale-105 bg-muted">
+                        <Home className="h-8 w-8 text-primary" />
                       </div>
-                      <div className={cn("absolute -top-3 -left-3 h-8 w-8 rounded-full text-xs font-black text-white flex items-center justify-center border-4 border-white shadow-md", theme.button.split(" ")[0])}>
+                      <div className="absolute -top-3 -left-3 h-8 w-8 rounded-full text-xs font-black text-white flex items-center justify-center border-4 border-white shadow-md bg-primary">
                         {index + 1}
                       </div>
                     </div>
@@ -87,9 +83,9 @@ export function MostPopularResidence({ color: defaultColor }: { color?: ColorTyp
                     </div>
                   </div>
 
-                  <div className={cn("flex flex-col items-center md:items-end px-6 py-2 rounded-xl border-l-4", theme.border, theme.bg)}>
+                  <div className="flex flex-col items-center md:items-end px-6 py-2 rounded-xl border-l-4 bg-muted/20">
                     <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70 mb-1">Status</span>
-                    <span className={cn("text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-white border", theme.icon)}>Hot Listing</span>
+                    <span className="text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-white border text-primary">Hot Listing</span>
                   </div>
                 </div>
                 {index < residences.length - 1 && <Separator className="opacity-50" />}

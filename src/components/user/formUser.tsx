@@ -5,9 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from "zod"
 import { toast } from "sonner"
-import type { User, ColorType } from "@/types"
-import { colorClasses } from "@/types"
-import { cn } from "@/lib/utils"
+import type { User } from "@/types"
 
 
 const userFormSchema = z.object({
@@ -25,7 +23,7 @@ type UserResponse = User
 
 const API_URL = import.meta.env.VITE_API_URL
 
-const CreateUserForm = ({ onFormSubmit, color }: { onFormSubmit?: (data: UserResponse) => void, color: ColorType }) => {
+const CreateUserForm = ({ onFormSubmit }: { onFormSubmit?: (data: UserResponse) => void }) => {
 
     const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<UserFormValues>(
         {
@@ -92,11 +90,8 @@ const CreateUserForm = ({ onFormSubmit, color }: { onFormSubmit?: (data: UserRes
     return (
         <form
             id="create-user-form"
-            className="space-y-4 max-w-xl mx-auto p-4"
-            onSubmit={(e) => {
-                console.log("Form submitted event")
-                handleSubmit(onSubmit)(e)
-            }}
+            className="space-y-4 p-6 bg-card rounded-xl border-2 shadow-sm"
+            onSubmit={handleSubmit(onSubmit)}
         >
             <h1 className="text-2xl font-bold">CREATE USER</h1>
 
@@ -160,7 +155,7 @@ const CreateUserForm = ({ onFormSubmit, color }: { onFormSubmit?: (data: UserRes
                 {errors.address && <p className="text-destructive text-xs">{errors.address.message}</p>}
             </div>
 
-            <Button type="submit" className={cn("w-full", colorClasses[color].button)} disabled={isSubmitting /* || isLoadingHosts */}>
+            <Button type="submit" className="w-full" disabled={isSubmitting /* || isLoadingHosts */}>
                 {isSubmitting ? "Salvataggio..." : "Create User"}
             </Button>
         </form>

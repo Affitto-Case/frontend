@@ -18,12 +18,12 @@ const colorClasses: Record<ColorType, string> = {
 
 export function CardStats({ title, stats, color, icon: Icon }: { title: string; stats: number | null; color: ColorType; icon?: any }) {
   return (
-    <Card className="w-full hover:shadow-lg transition-shadow duration-300 h-32 flex flex-col justify-between">
+    <Card className="hover:shadow-lg transition-shadow duration-300 h-32 flex flex-col justify-between">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
         {Icon && <Icon className={`h-4 w-4 ${colorClasses[color]}`} />}
       </CardHeader>
-      <CardContent>
+      <CardContent className="mx-auto">
         {stats !== null ? (
           <div className="text-2xl font-bold">{stats}</div>
         ) : (

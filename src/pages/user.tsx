@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react"
-import { useLocation } from "react-router-dom"
-import type { User, ColorType } from "@/types/index"
-import { colorClasses } from "@/types/index"
-import { cn } from "@/lib/utils"
+import type { User } from "@/types/index"
 import TableUser from "@/components/user/table"
 import CreateUserForm from "@/components/user/formUser"
 import { toast } from "sonner"
-import { Loader2, Users } from "lucide-react"
+import { Loader2, PlusIcon, Users } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 
-export function UserManage({ color: defaultColor }: { color?: ColorType }) {
-  const location = useLocation()
-  const themeColor = (location.state as { themeColor?: ColorType })?.themeColor || defaultColor || "blue"
-  const theme = colorClasses[themeColor]
+export function UserManage() {
 
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [searchUser,setSearchUser] = useState("")
+  const [open, setOpen] = useState(false)
   const API_URL = import.meta.env.VITE_API_URL
 
   useEffect(() => {
@@ -45,32 +44,67 @@ export function UserManage({ color: defaultColor }: { color?: ColorType }) {
     setUsers(prev => prev.filter(u => u.userId !== userId))
   }
 
+  const filteredUsers = users.filter((u) =>
+    u.userFirstName.toLowerCase().includes(searchUser.toLowerCase()) ||
+    u.userLastName.toLowerCase().includes(searchUser.toLowerCase()) ||
+    u.userEmail.toLowerCase().includes(searchUser.toLowerCase()) ||
+    (u.userFirstName.toLowerCase() + " " + u.userLastName.toLowerCase()).includes(searchUser.toLowerCase())
+  )
+
   return (
     <div className="container mx-auto py-8 space-y-8">
-      <div className="flex items-center gap-2 border-b pb-4">
-        <Users className={cn("size-6", theme.icon)} />
+      <div className="flex items-center gap-2 border-b pb-4 justify-between">
+        <div className="flex items center justify-center gap-4">
+        <Users className="size-6" />
         <h1 className="text-2xl font-bold tracking-tight">User Management</h1>
+        </div>
+        <div className="flex items-center gap-4">
+        <div className="w-48">
+              <Input
+                placeholder="Search users..."
+                value={searchUser}
+                onChange={(e) => setSearchUser(e.target.value)}
+                className="bg-background"
+              />
+            </div>
+          <Button onClick={() => setOpen(true)}>
+            <PlusIcon className="size-4" />
+            Add User
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className={cn("lg:col-span-4 rounded-xl border-2 p-1", theme.border)}>
-          <CreateUserForm onFormSubmit={handleFormSubmit} color={themeColor} />
-        </div>
+      <div className="w-full">
+        {/* <div className="lg:col-span-4 rounded-xl border-2 p-1">
+          <CreateUserForm onFormSubmit={handleFormSubmit} />
+        </div> */}
 
-        <div className={cn("lg:col-span-8 bg-white rounded-lg border shadow-sm", theme.border)}>
+        <div className="w-full bg-card rounded-lg border shadow-sm">
           {isLoading ? (
             <div className="flex h-64 items-center justify-center">
               <Loader2 className="size-8 animate-spin text-muted-foreground" />
             </div>
           ) : (
             <TableUser
-              users={users}
+              users={filteredUsers}
               onUserUpdated={handleUserUpdated}
               onUserDeleted={handleUserDeleted}
             />
           )}
         </div>
       </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add User</DialogTitle>
+            <DialogDescription>
+              Add a new user to the system.
+            </DialogDescription>
+          </DialogHeader>
+          <CreateUserForm onFormSubmit={handleFormSubmit} />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

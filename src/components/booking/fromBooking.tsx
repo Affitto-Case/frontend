@@ -23,9 +23,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
-import type { Booking, User, Residence, ColorType } from "@/types"
-import { colorClasses } from "@/types"
-import { cn } from "@/lib/utils"
+import type { Booking, User, Residence } from "@/types"
 
 const bookingFormSchema = z.object({
   startDate: z.string().min(1, "Start date is required"),
@@ -37,7 +35,7 @@ const bookingFormSchema = z.object({
 type BookingFormValues = z.infer<typeof bookingFormSchema>
 const API_URL = import.meta.env.VITE_API_URL
 
-const CreateBookingForm = ({ onFormSubmit, color }: { onFormSubmit?: (data: Booking) => void, color: ColorType }) => {
+const CreateBookingForm = ({ onFormSubmit }: { onFormSubmit?: (data: Booking) => void }) => {
   const [users, setUsers] = useState<User[]>([])
   const [residences, setResidences] = useState<Residence[]>([])
   const [isFetchingBookings, setIsFetchingBookings] = useState(false)
@@ -116,11 +114,11 @@ const CreateBookingForm = ({ onFormSubmit, color }: { onFormSubmit?: (data: Book
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-4">
-      <div className="flex flex-col md:flex-row gap-6 items-start">
+    <div className="w-full p-4">
+      <div className="flex flex-col gap-6 items-start">
 
         {/* FORM PANEL */}
-        <form className="w-full md:w-96 space-y-6 p-6 bg-white rounded-lg border border-border shadow-sm" onSubmit={handleSubmit(onSubmit)}>
+        <form className="w-full space-y-6 p-6 bg-card rounded-lg border border-border shadow-sm" onSubmit={handleSubmit(onSubmit)}>
           <div>
             <h2 className="text-lg font-semibold tracking-tight">Create Booking</h2>
             <p className="text-sm text-muted-foreground">Enter details for the new reservation.</p>
@@ -165,7 +163,7 @@ const CreateBookingForm = ({ onFormSubmit, color }: { onFormSubmit?: (data: Book
             </div>
           </div>
 
-          <Button type="submit" className={cn("w-full", colorClasses[color].button)} disabled={isSubmitting}>
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Confirm Reservation
           </Button>

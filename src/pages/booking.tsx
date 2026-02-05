@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react"
-import { useLocation } from "react-router-dom"
-import type { Booking, ColorType } from "@/types/index"
-import { colorClasses } from "@/types/index"
-import { cn } from "@/lib/utils"
+import type { Booking } from "@/types/index"
 import TableBooking from "@/components/booking/table"
 import CreateBookingForm from "@/components/booking/fromBooking"
 import { toast } from "sonner"
-import { Loader2, CalendarDays } from "lucide-react"
+import { Loader2, CalendarDays, PlusIcon } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 
-export function BookingManage({ color: defaultColor }: { color?: ColorType }) {
-  const location = useLocation()
-  const themeColor = (location.state as { themeColor?: ColorType })?.themeColor || defaultColor || "blue"
-  const theme = colorClasses[themeColor]
+export function BookingManage() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [searchBooking, setSearchBooking] = useState("")
+  const [open, setOpen] = useState(false)
 
   const API_URL = import.meta.env.VITE_API_URL
 
@@ -39,58 +38,81 @@ export function BookingManage({ color: defaultColor }: { color?: ColorType }) {
     fetchBookings();
   }, [])
 
-  const handleFormSubmit = (data: Booking) => {
-    console.log("Booking created:", data)
-    const newBooking: Booking = {
-      ...data,
-    }
-
-    setBookings(prevBookings => [...prevBookings, newBooking])
-  }
-
-  const handleBookingUpdated = (updatedBooking: Booking) => {
-    console.log("Booking updated:", updatedBooking)
-
-    // Aggiorna la prenotazione nella lista tramite bookingId
-    setBookings(prevBookings =>
-      prevBookings.map(booking =>
-        booking.id === updatedBooking.id
-          ? { ...updatedBooking }
-          : booking
-      )
-    )
-  }
-
   const handleBookingDeleted = (bookingId: number) => {
     console.log("Booking deleted:", bookingId)
     setBookings(prevBookings => prevBookings.filter(booking => booking.id !== bookingId))
   }
 
+  const handleBookingUpdated = (updatedBooking: Booking) => {
+    setBookings(prevBookings =>
+      prevBookings.map(booking =>
+        booking.id === updatedBooking.id ? updatedBooking : booking
+      )
+    )
+  }
+
+  const handleFormSubmit = (newBooking: Booking) => {
+    setBookings(prev => [...prev, newBooking])
+    setOpen(false)
+  }
+
+  const filteredBookings = bookings.filter((b) =>
+    b.residenceName.toLowerCase().includes(searchBooking.toLowerCase()) ||
+    b.userFirstName.toLowerCase().includes(searchBooking.toLowerCase()) ||
+    b.userLastName.toLowerCase().includes(searchBooking.toLowerCase()) ||
+    (b.userFirstName + " " + b.userLastName).toLowerCase().includes(searchBooking.toLowerCase())
+  )
+
   return (
-    <div className="container mx-auto px-6 py-8 space-y-8">
-      <div className="flex items-center gap-2 border-b pb-4">
-        <CalendarDays className={cn("size-6", theme.icon)} />
-        <h1 className="text-2xl font-bold tracking-tight">Booking Management</h1>
+    <div className="container mx-auto py-8 space-y-8">
+      <div className="flex items-center gap-2 border-b pb-4 justify-between">
+        <div className="flex items-center justify-center gap-4">
+          <CalendarDays className="size-6" />
+          <h1 className="text-2xl font-bold tracking-tight">Booking Management</h1>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="w-64">
+            <Input
+              placeholder="Search bookings..."
+              value={searchBooking}
+              onChange={(e) => setSearchBooking(e.target.value)}
+              className="bg-background"
+            />
+          </div>
+          <Button onClick={() => setOpen(true)}>
+            <PlusIcon className="size-4 mr-2" />
+            Add Booking
+          </Button>
+        </div>
       </div>
 
-      <div className="flex flex-col gap-6 w-full">
-        <div className={cn("w-full rounded-lg shadow-md p-6 mb-8 border-2 bg-card", theme.border)}>
-          <CreateBookingForm onFormSubmit={handleFormSubmit} color={themeColor} />
-        </div>
-        <div className={cn("w-full bg-white rounded-lg border-2 shadow-sm", theme.border)}>
+      <div className="w-full">
+        <div className="w-full bg-card rounded-lg border shadow-sm">
           {isLoading ? (
             <div className="flex h-64 items-center justify-center">
               <Loader2 className="size-8 animate-spin text-muted-foreground" />
             </div>
           ) : (
             <TableBooking
-              bookings={bookings}
+              bookings={filteredBookings}
               onBookingUpdated={handleBookingUpdated}
               onBookingDeleted={handleBookingDeleted}
             />
           )}
         </div>
       </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add Booking</DialogTitle>
+            <DialogDescription>
+              Record a new booking in the system.
+            </DialogDescription>
+          </DialogHeader>
+          <CreateBookingForm onFormSubmit={handleFormSubmit} />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

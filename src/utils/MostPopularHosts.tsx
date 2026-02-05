@@ -1,17 +1,12 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Award, User, Mail, Trophy, Loader2, Sparkles } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
-import { colorClasses, type ColorType, type Host } from "@/types";
-import { cn } from "@/lib/utils";
+import { type Host } from "@/types";
 
-export function TopHosts({ color: defaultColor }: { color?: ColorType }) {
-  const location = useLocation()
-  const themeColor = (location.state as { themeColor?: ColorType })?.themeColor || defaultColor || "blue"
-  const theme = colorClasses[themeColor]
+export function TopHosts() {
 
   const [hosts, setHosts] = useState<Host[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,15 +32,15 @@ export function TopHosts({ color: defaultColor }: { color?: ColorType }) {
   return (
     <div className="container mx-auto px-6 py-8 space-y-8">
       <div className="flex items-center gap-2 border-b pb-4">
-        <Trophy className={cn("size-6", theme.icon)} />
+        <Trophy className="size-6 text-primary" />
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Top Performance</h1>
           <p className="text-sm text-muted-foreground">Recognizing our most active and successful hosts</p>
         </div>
       </div>
 
-      <Card className={cn("border-2 shadow-xl overflow-hidden", theme.border)}>
-        <CardHeader className={cn("pb-8", theme.bg)}>
+      <Card className="border-2 shadow-xl overflow-hidden">
+        <CardHeader className="pb-8 bg-muted/20">
           <div className="flex items-start justify-between mt-4">
             <div>
               <CardTitle className="text-2xl font-black tracking-tight">Host Leaderboard</CardTitle>
@@ -53,7 +48,7 @@ export function TopHosts({ color: defaultColor }: { color?: ColorType }) {
                 Ranking based on successful bookings confirmed this month
               </CardDescription>
             </div>
-            <div className="bg-white/50 backdrop-blur-sm p-3 rounded-2xl border border-white shadow-sm">
+            <div className="bg-card/50 backdrop-blur-sm p-3 rounded-2xl border border-border shadow-sm">
               <Award className="h-6 w-6 text-amber-500" />
             </div>
           </div>
@@ -62,7 +57,7 @@ export function TopHosts({ color: defaultColor }: { color?: ColorType }) {
         <CardContent className="p-0">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-24 bg-muted/5">
-              <Loader2 className={cn("h-10 w-10 animate-spin mb-4", theme.icon)} />
+              <Loader2 className="h-10 w-10 animate-spin mb-4" />
               <p className="text-sm font-bold text-muted-foreground animate-pulse tracking-widest uppercase">Calculating rankings...</p>
             </div>
           ) : hosts.length > 0 ? (
@@ -71,8 +66,8 @@ export function TopHosts({ color: defaultColor }: { color?: ColorType }) {
                 <div className="flex flex-col md:flex-row justify-between items-center gap-8 p-8 transition-all hover:bg-muted/30">
                   <div className="flex items-center gap-6">
                     <div className="relative">
-                      <Avatar className={cn("h-16 w-16 border-2 shadow-md transition-transform group-hover:scale-105", theme.border)}>
-                        <AvatarFallback className={cn("bg-white font-black text-xl uppercase", theme.icon)}>
+                      <Avatar className="h-16 w-16 border-2 shadow-md transition-transform group-hover:scale-105">
+                        <AvatarFallback className="bg-white font-black text-xl uppercase text-primary">
                           {host.firstName[0]}{host.lastName[0]}
                         </AvatarFallback>
                       </Avatar>
@@ -89,7 +84,7 @@ export function TopHosts({ color: defaultColor }: { color?: ColorType }) {
                           {host.firstName} {host.lastName}
                         </h3>
                         {host.isSuperHost && (
-                          <div className={cn("inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter", theme.button.split(" ")[0], "text-white")}>
+                          <div className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter bg-primary text-white">
                             <Sparkles className="h-2.5 w-2.5" />
                             Superhost
                           </div>
@@ -107,12 +102,12 @@ export function TopHosts({ color: defaultColor }: { color?: ColorType }) {
                     </div>
                   </div>
 
-                  <div className={cn("flex flex-col items-center md:items-end px-8 py-3 rounded-2xl border bg-white shadow-sm min-w-[140px]", theme.border)}>
+                  <div className="flex flex-col items-center md:items-end px-8 py-3 rounded-2xl border bg-card shadow-sm min-w-[140px]">
                     <p className="text-[10px] uppercase font-black text-muted-foreground/60 tracking-[0.2em] mb-1">
                       Final Score
                     </p>
                     <div className="flex items-baseline gap-1">
-                      <p className={cn("text-4xl font-black leading-none", theme.icon)}>
+                      <p className="text-4xl font-black leading-none text-primary">
                         {host.totalBookings}
                       </p>
                       <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter">Bookings</span>

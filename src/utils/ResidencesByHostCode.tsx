@@ -1,75 +1,82 @@
-import { useLocation } from "react-router-dom"
-import { colorClasses, type ColorType, type Residence } from "@/types"
-import { useEffect, useState } from "react"
-import { cn } from "@/lib/utils"
-import { Building2, Search } from "lucide-react"
-import InputField from "@/components/common/inputField"
+import { Building2 } from "lucide-react"
+import { useState, useEffect, useCallback } from "react"
+import { useParams } from "react-router-dom"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import type { Residence } from "@/types"
 import TableResidence from "@/components/residence/table"
 
-export function ResidenceByHostCode({ color: defaultColor }: { color?: ColorType }) {
-  const location = useLocation()
-  const themeColor = (location.state as { themeColor?: ColorType })?.themeColor || defaultColor || "blue"
-  const theme = colorClasses[themeColor]
+export function ResidenceByHostCode() {
 
+  const { hostCode: urlHostCode } = useParams<{ hostCode: string }>()
   const [residences, setResidences] = useState<Residence[]>([])
-  const [hostCode, setHostCode] = useState<string>("")
+  const [hostCode, setHostCode] = useState(urlHostCode || "")
+  const [isSearching, setIsSearching] = useState(false)
+  const API_URL = import.meta.env.VITE_API_URL
 
-  const API_URL = import.meta.env.VITE_API_URL;
-  useEffect(() => {
-    if (!hostCode) {
+  const loadResidences = useCallback(async (code: string) => {
+    if (!code) {
       setResidences([])
       return
     }
 
-    const loadResidences = async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/v1/residences/owner/host_code/${hostCode}`);
-        if (!res.ok) {
-          switch (res.status) {
-            case 404:
-              throw new Error('Risorsa non trovata');
-            default:
-              throw new Error('Errore nel recupero dei post');
-          }
-        }
-        const residenceRes = await res.json();
-        setResidences(residenceRes);
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log(error.message);
-          setResidences([])
-        }
+    setIsSearching(true)
+    try {
+      const res = await fetch(`${API_URL}/api/v1/residences/owner/host_code/${code}`)
+      if (!res.ok) {
+        throw new Error(res.status === 404 ? 'Host not found' : 'Failed to fetch residences')
       }
+      const data = await res.json()
+      setResidences(data)
+    } catch (error) {
+      console.error(error)
+      setResidences([])
+    } finally {
+      setIsSearching(false)
     }
+  }, [API_URL])
 
-    loadResidences()
-  }, [hostCode, API_URL])
+  // Initial load or update when URL param changes
+  useEffect(() => {
+    if (urlHostCode) {
+      setHostCode(urlHostCode)
+      loadResidences(urlHostCode)
+    }
+  }, [urlHostCode, loadResidences])
 
-  function changeValue(value: string) {
-    setHostCode(value);
+  const handleSearch = () => {
+    loadResidences(hostCode)
   }
+
+
+
 
   return (
     <div className="container mx-auto px-6 py-8 space-y-8">
-      <div className="flex items-center gap-2 border-b pb-4">
-        <Building2 className={cn("size-6", theme.icon)} />
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Residences lookup</h1>
-          <p className="text-sm text-muted-foreground">Find all properties managed by a specific host</p>
-        </div>
-      </div>
-
-      <div className={cn("max-w-md mx-auto p-6 rounded-xl border-2 bg-card shadow-sm", theme.border)}>
-        <div className="flex items-center gap-3 mb-4">
-          <div className={cn("p-2 rounded-lg", theme.bg, theme.icon)}>
-            <Search className="size-5" />
+      <div className="flex items-center gap-2 border-b pb-4 justify-between">
+        <div className="flex gap-3 justify-center items-center">
+          <Building2 className="size-6" />
+          <div className="flex flex-col">
+            <h1 className="text-2xl font-bold tracking-tight">Residences lookup</h1>
+            <p className="text-sm text-muted-foreground">Find all properties managed by a specific host</p>
           </div>
-          <span className="font-semibold text-foreground">Search by Host Code</span>
         </div>
-        <InputField label="" desc="Enter host unique code to list their properties" value={hostCode} onChange={changeValue} />
+        <div className="flex justify-center items-center gap-2">
+          <span className="font-semibold text-foreground whitespace-nowrap">Search by Host Code</span>
+          <div className="flex gap-2">
+            <Input
+              placeholder="Enter host code..."
+              value={hostCode}
+              onChange={(e) => setHostCode(e.target.value)}
+            />
+            <Button onClick={handleSearch} disabled={isSearching}>
+              {isSearching ? "Searching..." : "Search"}
+            </Button>
+          </div>
+        </div>
       </div>
 
-      <div className={cn("rounded-xl border-2 bg-white shadow-sm overflow-hidden", theme.border)}>
+      <div className="rounded-xl border-2 bg-card shadow-sm overflow-hidden">
         <TableResidence residences={residences} />
       </div>
     </div>

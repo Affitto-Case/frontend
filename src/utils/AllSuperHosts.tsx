@@ -5,10 +5,13 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import type { Host } from "@/types";
+import { Input } from "@/components/ui/input";
 
 export function SuperHosts() {
   const [hosts, setHosts] = useState<Host[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchSuperHost, setSearchSuperHost] = useState("");
+
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -26,30 +29,47 @@ export function SuperHosts() {
     };
 
     fetchSuperHosts();
-  }, [API_URL]);
+  }, []);
+
+  const filteredHosts = hosts.filter((h) =>
+    h.firstName.toLowerCase().includes(searchSuperHost.toLowerCase()) ||
+    h.lastName.toLowerCase().includes(searchSuperHost.toLowerCase()) ||
+    h.email.toLowerCase().includes(searchSuperHost.toLowerCase()) ||
+    h.hostCode.toLowerCase().includes(searchSuperHost.toLowerCase()) ||
+    (h.firstName.toLowerCase() + " " + h.lastName.toLowerCase()).includes(searchSuperHost.toLowerCase())
+  )
 
   return (
     <div className="container mx-auto py-8 space-y-8">
       <div className="flex items-center gap-2 border-b pb-4">
-        <ShieldCheck className="size-6 text-primary" />
+        <ShieldCheck className="size-6" />
         <h1 className="text-2xl font-bold tracking-tight">SuperHost Directory</h1>
       </div>
 
-      <Card className="border-2 border-primary/10 shadow-md min-h-4">
-        <CardHeader className="bg-primary/5 pb-6">
+      <div className="w-64">
+        <Input
+          type="text"
+          placeholder="Search SuperHost"
+          value={searchSuperHost}
+          onChange={(e) => setSearchSuperHost(e.target.value)}
+        />
+      </div>
+
+      <Card className="border-2 shadow-md min-h-4">
+        <CardHeader className="bg-muted/10 pb-6">
           <div className="flex items-center gap-4 mt-4">
             <div className="p-3 bg-white rounded-xl shadow-sm">
               <Award className="h-8 w-8 text-amber-500" />
             </div>
             <div>
-              <CardTitle className="text-2xl">Certified SuperHosts</CardTitle>
+              <CardTitle className="text-2xl font-black">Certified SuperHosts</CardTitle>
               <CardDescription>
                 A complete list of our most trusted and high-performing partners
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        
+
         <CardContent className="p-0">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-24">
@@ -58,19 +78,19 @@ export function SuperHosts() {
                 Verifying certifications...
               </p>
             </div>
-          ) : hosts.length > 0 ? (
-            hosts.map((host, index) => (
+          ) : filteredHosts.length > 0 ? (
+            filteredHosts.map((host, index) => (
               <div key={host.id || index}>
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6 p-6 transition-colors hover:bg-muted/50">
                   <div className="flex items-center gap-5">
                     {/* Avatar with Status Ring */}
                     <div className="relative">
-                      <Avatar className="h-16 w-16 border-2 border-primary shadow-sm">
+                      <Avatar className="h-16 w-16 border-2 shadow-sm">
                         <AvatarFallback className="bg-primary/5 text-primary font-bold text-lg uppercase">
                           {host.firstName[0]}{host.lastName[0]}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="absolute -bottom-1 -right-1 bg-primary text-white p-1 rounded-full border-2 border-white shadow-sm">
+                      <div className="absolute -bottom-1 -right-1 bg-primary text-white p-1 rounded-full border-2 border-card shadow-sm">
                         <ShieldCheck className="h-3 w-3" />
                       </div>
                     </div>
@@ -106,11 +126,11 @@ export function SuperHosts() {
                     </div>
                   </div>
                 </div>
-                {index < hosts.length - 1 && <Separator />}
+                {index < filteredHosts.length - 1 && <Separator />}
               </div>
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground bg-muted/10">
               <User className="h-12 w-12 mb-3 opacity-10" />
               <p className="text-sm font-medium">No SuperHosts found in the database.</p>
             </div>
