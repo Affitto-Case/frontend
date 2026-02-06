@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,23 +34,30 @@ export function LastUserBooking() {
   const [lastBooking, setLastBooking] = useState<Booking | null>(null);
   const [isLoadingBooking, setIsLoadingBooking] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [searchUser, setSearchUser] = useState<string>("");
+  const { userName: urlUserName } = useParams<{ userName: string }>();
+  const [searchUser, setSearchUser] = useState<string>(urlUserName || "");
   const [users, setUsers] = useState<User[]>([]);
 
 
-    useEffect(() => {
-      const fetchUsers = async () => {
-        try {
-          const res = await fetch(`${API_URL}/api/v1/users`)
-          if (!res.ok) throw new Error("Failed to fetch users")
-          const data = await res.json()
-          setUsers(data)
-        } catch (error) {
-          toast.error(error instanceof Error ? error.message : "Error loading users")
-        } 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/v1/users`)
+        if (!res.ok) throw new Error("Failed to fetch users")
+        const data = await res.json()
+        setUsers(data)
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Error loading users")
       }
-      fetchUsers()
-    }, [])
+    }
+    fetchUsers()
+  }, [])
+
+  useEffect(() => {
+    if (urlUserName) {
+      setSearchUser(urlUserName);
+    }
+  }, [urlUserName])
 
   const API_URL = import.meta.env.VITE_API_URL;
 

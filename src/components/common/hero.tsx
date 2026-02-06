@@ -1,5 +1,5 @@
 import { CardStats } from "@/components/common/card";
-import type { AvgBedsResponse, Booking, Feedback, Host, Residence, User } from "@/types";
+import type { AvgBedsResponse } from "@/types";
 import { Users, Home, Building2, CalendarDays, MessageSquare, BarChart3 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";

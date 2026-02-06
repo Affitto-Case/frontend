@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ButtonOperation } from "./buttonOperation";
-import { History, Trophy, Crown, Medal, Users } from "lucide-react";
+import { Trophy, Crown, Medal, Users } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ export function Operation() {
     const url = "/query/";
 
     const [hostCode, setHostCode] = useState("");
+    const [userName, setUserName] = useState("");
 
     const navigator = useNavigate();
 
@@ -33,7 +34,19 @@ export function Operation() {
                         Search
                     </Button>
                 </div>
-                <ButtonOperation title="Last User Booking" color="green" path={`${url}lastUserBooking`} icon={History} />
+                <div className="flex justify-center items-center my-auto gap-4">
+                    <div className="w-64">
+                        <Input
+                            placeholder="Last user booking..."
+                            value={userName}
+                            onChange={(e) => setUserName(e.target.value)}
+                            className="bg-background"
+                        />
+                    </div>
+                    <Button onClick={() => navigator(`${url}lastUserBooking/${userName}`)}>
+                        Search
+                    </Button>
+                </div>
                 <ButtonOperation title="Most Popular Residence" color="yellow" path={`${url}mostPopularResidence`} icon={Trophy} />
                 <ButtonOperation title="Top Hosts This Month" color="purple" path={`${url}topHostsThisMonth`} icon={Medal} />
                 <ButtonOperation title="All Super-Hosts" color="pink" path={`${url}superHosts`} icon={Crown} />

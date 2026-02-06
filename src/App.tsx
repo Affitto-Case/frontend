@@ -100,7 +100,7 @@ export function App() {
       </Route>
       <Route path="/query/" element={<Layout />}>
         <Route path="residencesByHostCode/:hostCode?" element={<ResidenceByHostCode />} />
-        <Route path="lastUserBooking" element={<LastUserBooking />} />
+        <Route path="lastUserBooking/:userName?" element={<LastUserBooking />} />
         <Route path="mostPopularResidence" element={<MostPopularResidence />} />
         <Route path="topHostsThisMonth" element={<TopHosts />} />
         <Route path="superHosts" element={<SuperHosts />} />
