@@ -1,7 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Homepage from "./pages/homepage";
 import { useEffect, useState } from "react";
-import { type User, type Booking, type Feedback, type Host, type Residence } from "./types";
 import { toast } from 'sonner'
 import Layout from "./components/common/layout"
 import ResidenceByHostCode from "./utils/ResidencesByHostCode";
@@ -21,11 +20,11 @@ export function App() {
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const [users, setUsers] = useState<User[]>([]);
-  const [hosts, setHosts] = useState<Host[]>([]);
-  const [residences, setResidences] = useState<Residence[]>([]);
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [usersCount, setUsersCount] = useState<number>(0);
+  const [hostsCount, setHostsCount] = useState<number>(0);
+  const [residencesCount, setResidencesCount] = useState<number>(0);
+  const [bookingsCount, setBookingsCount] = useState<number>(0);
+  const [feedbacksCount, setFeedbacksCount] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
 
@@ -36,11 +35,11 @@ export function App() {
       try {
         const [usersRes, hostsRes, residencesRes, bookingsRes, feedbacksRes] =
           await Promise.all([
-            fetch(`${API_URL}/api/v1/users`),
-            fetch(`${API_URL}/api/v1/hosts`),
-            fetch(`${API_URL}/api/v1/residences`),
-            fetch(`${API_URL}/api/v1/bookings`),
-            fetch(`${API_URL}/api/v1/feedbacks`)
+            fetch(`${API_URL}/api/v1/users/stats/count`),
+            fetch(`${API_URL}/api/v1/hosts/stats/count`),
+            fetch(`${API_URL}/api/v1/residences/stats/count`),
+            fetch(`${API_URL}/api/v1/bookings/stats/count`),
+            fetch(`${API_URL}/api/v1/feedbacks/stats/count`)
           ]);
 
         if (!usersRes.ok || !hostsRes.ok || !residencesRes.ok ||
@@ -48,7 +47,7 @@ export function App() {
           throw new Error('Errore nel caricamento dei dati');
         }
 
-        const [users, hosts, residences, bookings, feedbacks] =
+        const [usersCountData, hostsCountData, residencesCountData, bookingsCountData, feedbacksCountData] =
           await Promise.all([
             usersRes.json(),
             hostsRes.json(),
@@ -57,11 +56,11 @@ export function App() {
             feedbacksRes.json()
           ]);
 
-        setUsers(users);
-        setHosts(hosts);
-        setResidences(residences);
-        setBookings(bookings);
-        setFeedbacks(feedbacks);
+        setUsersCount(usersCountData);
+        setHostsCount(hostsCountData);
+        setResidencesCount(residencesCountData);
+        setBookingsCount(bookingsCountData);
+        setFeedbacksCount(feedbacksCountData);
 
         toast.success("Data loaded successfully");
 
@@ -90,18 +89,18 @@ export function App() {
           index
           element={
             <Homepage
-              users={users}
-              hosts={hosts}
-              residences={residences}
-              bookings={bookings}
-              feedbacks={feedbacks}
+              users={usersCount}
+              hosts={hostsCount}
+              residences={residencesCount}
+              bookings={bookingsCount}
+              feedbacks={feedbacksCount}
             />
           }
         />
       </Route>
       <Route path="/query/" element={<Layout />}>
         <Route path="residencesByHostCode/:hostCode?" element={<ResidenceByHostCode />} />
-        <Route path="lastUserBooking" element={<LastUserBooking users={users} />} />
+        <Route path="lastUserBooking" element={<LastUserBooking />} />
         <Route path="mostPopularResidence" element={<MostPopularResidence />} />
         <Route path="topHostsThisMonth" element={<TopHosts />} />
         <Route path="superHosts" element={<SuperHosts />} />

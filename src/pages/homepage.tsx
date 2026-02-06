@@ -1,10 +1,22 @@
 import DataManagment from "@/components/common/data_mang";
 import HeroCard from "@/components/common/hero";
 import { Operation } from "@/components/common/operation";
-import type { Booking, Feedback, Host, Residence, User } from "@/types";
 
 export function Homepage(
-    { users, hosts, residences, bookings, feedbacks }: { users: User[], hosts: Host[], residences: Residence[], bookings: Booking[], feedbacks: Feedback[] }
+    { 
+  users,
+  hosts,
+  residences,
+  bookings,
+  feedbacks
+}: {
+  users: number
+  hosts: number
+  residences: number
+  bookings: number
+  feedbacks: number
+}
+
 ) {
     return (
         <div className="container mx-auto px-6 py-8 space-y-8">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,19 +25,31 @@ import {
 import { type User, type Booking } from "@/types";
 import { MoreHorizontalIcon, Calendar, Home, User as UserIcon, Loader2, History } from "lucide-react";
 import { toast } from "sonner";
-import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 
 
-export function LastUserBooking({ users }: { users: User[] }) {
+export function LastUserBooking() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [lastBooking, setLastBooking] = useState<Booking | null>(null);
   const [isLoadingBooking, setIsLoadingBooking] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [searchUser, setSearchUser] = useState<string>("")
+  const [searchUser, setSearchUser] = useState<string>("");
+  const [users, setUsers] = useState<User[]>([]);
 
 
-
+    useEffect(() => {
+      const fetchUsers = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/v1/users`)
+          if (!res.ok) throw new Error("Failed to fetch users")
+          const data = await res.json()
+          setUsers(data)
+        } catch (error) {
+          toast.error(error instanceof Error ? error.message : "Error loading users")
+        } 
+      }
+      fetchUsers()
+    }, [])
 
   const API_URL = import.meta.env.VITE_API_URL;
 
